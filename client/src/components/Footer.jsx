@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import logo from "../assets/logo.jpg";
+import logofoot from "../assets/logofoot.png";
 
 import "./Footer.css";
 
@@ -21,7 +21,7 @@ function Footer() {
         <div className="footer-brand">
 
           <img
-            src={logo}
+            src={logofoot}
             alt="HealthHub"
           />
 
