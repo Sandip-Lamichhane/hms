@@ -13,7 +13,7 @@ function Footer() {
           FOOTER CONTENT
       ========================= */}
 
-      <div className="footer-main">
+      <div className="footer-main ">
 
 
         {/* BRAND */}
