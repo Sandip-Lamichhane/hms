@@ -1,14 +1,20 @@
-import { Routes, Route} from 'react-router-dom';
-import Home from '../pages/Home';
+import { Routes, Route } from "react-router-dom";
 
-export default function AppRoutes() {
+import Layout from "../Layouts/Layout.jsx";
+import Home from "../pages/Home.jsx";
 
+function AppRoutes() {
+  return (
+    <Routes>
 
-    return(
-        <Routes>
-            <Route path='/' element={Home}>
-                {/* <Route index element={< />} /> */}
-            </Route>
-        </Routes>
-    )
+      <Route element={<Layout />}>
+
+        <Route path="/" element={<Home />} />
+
+      </Route>
+
+    </Routes>
+  );
 }
+
+export default AppRoutes;
