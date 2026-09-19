@@ -50,22 +50,22 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-      <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+    <div className="bg-white border border-[#c8eedc] rounded-2xl overflow-hidden shadow-xl">
+      <div className="px-5 py-4 border-b border-[#c8eedc] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-700 flex items-center justify-center">
             <BedDouble className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">Hospital Wards Capacity</h3>
-            <p className="text-xs text-slate-400">Directly adjust available beds for immediate public synchronization</p>
+            <h3 className="text-base font-bold text-slate-900">Hospital Wards Capacity</h3>
+            <p className="text-xs text-slate-500">Directly adjust available beds for immediate public synchronization</p>
           </div>
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-300">
-          <thead className="bg-slate-950/60 text-xs uppercase text-slate-400 font-semibold border-b border-slate-800/80">
+        <table className="w-full text-left text-sm text-slate-600">
+          <thead className="bg-[#fbfdfc] text-xs uppercase text-slate-500 font-semibold border-b border-emerald-100">
             <tr>
               <th className="px-5 py-3.5">Ward Type</th>
               <th className="px-5 py-3.5">Available Beds</th>
@@ -75,7 +75,7 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
               <th className="px-5 py-3.5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-emerald-100">
             {beds.length === 0 ? (
               <tr>
                 <td colSpan="6" className="px-5 py-8 text-center text-slate-500">
@@ -95,8 +95,8 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                     : 0;
 
                 return (
-                  <tr key={bed.id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="px-5 py-4 font-bold text-white flex items-center gap-2">
+                  <tr key={bed.id} className="hover:bg-emerald-50/30 transition-colors">
+                    <td className="px-5 py-4 font-bold text-slate-900 flex items-center gap-2">
                       <span
                         className={`w-2.5 h-2.5 rounded-full ${
                           bed.ward_type === 'ICU'
@@ -116,7 +116,7 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                           onClick={() =>
                             handleInputChange(bed.id, 'available_beds', current.available_beds - 1, current.total_beds)
                           }
-                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center text-sm disabled:opacity-30"
+                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center text-sm disabled:opacity-30"
                           disabled={current.available_beds <= 0 || isSaving}
                         >
                           -
@@ -129,14 +129,14 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                           onChange={(e) =>
                             handleInputChange(bed.id, 'available_beds', e.target.value, current.total_beds)
                           }
-                          className="w-16 text-center font-bold text-emerald-400 bg-slate-950 border border-slate-700 rounded-lg py-1 text-sm focus:outline-none focus:border-emerald-500"
+                          className="w-16 text-center font-bold text-emerald-400 bg-[#fbfdfc] border border-[#c8eedc] rounded-lg py-1 text-sm focus:outline-none focus:border-emerald-500"
                         />
                         <button
                           type="button"
                           onClick={() =>
                             handleInputChange(bed.id, 'available_beds', current.available_beds + 1, current.total_beds)
                           }
-                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center text-sm disabled:opacity-30"
+                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center text-sm disabled:opacity-30"
                           disabled={current.available_beds >= current.total_beds || isSaving}
                         >
                           +
@@ -150,14 +150,14 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                         min="1"
                         value={current.total_beds}
                         onChange={(e) => handleInputChange(bed.id, 'total_beds', e.target.value)}
-                        className="w-16 text-center font-semibold text-white bg-slate-950 border border-slate-700 rounded-lg py-1 text-sm focus:outline-none focus:border-blue-500"
+                        className="w-16 text-center font-semibold text-slate-900 bg-[#fbfdfc] border border-[#c8eedc] rounded-lg py-1 text-sm focus:outline-none focus:border-blue-500"
                       />
                     </td>
 
                     <td className="px-5 py-4">
                       <div className="w-28 space-y-1">
                         <div className="flex justify-between text-xs font-semibold">
-                          <span className={occupancyRate >= 90 ? 'text-red-400' : 'text-slate-400'}>
+                          <span className={occupancyRate >= 90 ? 'text-red-400' : 'text-slate-500'}>
                             {occupancyRate}%
                           </span>
                           <span className="text-[11px] text-slate-500">
@@ -179,7 +179,7 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                       </div>
                     </td>
 
-                    <td className="px-5 py-4 text-xs text-slate-400 whitespace-nowrap">
+                    <td className="px-5 py-4 text-xs text-slate-500 whitespace-nowrap">
                       {bed.last_updated ? new Date(bed.last_updated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently'}
                     </td>
 
@@ -190,7 +190,7 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                           disabled={isSaving || !hasChanged}
                           className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                             hasChanged
-                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950/60'
+                              ? 'bg-emerald-600 hover:bg-emerald-500 text-slate-900 shadow-md shadow-emerald-950/60'
                               : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                           }`}
                         >
@@ -209,7 +209,7 @@ export default function BedUpdateForm({ beds = [], onUpdateBed, onDeleteBed, loa
                         {onDeleteBed && (
                           <button
                             onClick={() => onDeleteBed(bed.id, bed.ward_type)}
-                            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-red-500/20 text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/30 transition-all"
+                            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-red-500/20 text-slate-500 hover:text-red-400 border border-[#c8eedc] hover:border-red-500/30 transition-all"
                             title="Delete Ward"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
