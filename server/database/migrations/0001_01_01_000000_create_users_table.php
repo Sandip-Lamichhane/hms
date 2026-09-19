@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -17,8 +14,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['super_admin', 'hospital_admin', 'hospital_staff'])->default('hospital_staff');
+            $table->unsignedBigInteger('hospital_id')->nullable(); // ← changed (no foreign key yet)
+            $table->string('phone', 20)->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->index('role');
+            $table->index('hospital_id');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -37,13 +40,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
