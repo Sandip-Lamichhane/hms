@@ -34,8 +34,13 @@ export default function EmergencyButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
 
-  // Do not show floating SOS emergency button on internal management portals (/hospital/* or /admin/*)
-  if (location.pathname.startsWith('/hospital') || location.pathname.startsWith('/admin')) {
+  // Do not show floating SOS emergency button on management portals (/hospital/* or /admin/*) or auth pages (/login, /register)
+  if (
+    location.pathname.startsWith('/hospital') ||
+    location.pathname.startsWith('/admin') ||
+    location.pathname === '/login' ||
+    location.pathname === '/register'
+  ) {
     return null;
   }
 

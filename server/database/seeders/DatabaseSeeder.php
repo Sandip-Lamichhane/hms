@@ -17,12 +17,20 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Super Admin
+        // 1. Super Admin & Demo Patient
         User::factory()->superAdmin()->create([
             'name' => 'Super Admin',
             'email' => 'admin@healthhub.com',
             'password' => Hash::make('password'),
             'phone' => '9800000001',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Demo Patient',
+            'email' => 'patient@healthhub.com',
+            'password' => Hash::make('password'),
+            'role' => 'patient',
+            'phone' => '9800000002',
         ]);
 
         // 2. Hospitals

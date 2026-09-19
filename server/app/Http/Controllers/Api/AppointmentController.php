@@ -255,8 +255,6 @@ class AppointmentController extends Controller
 
         // Automatically record in patient detail section (patient_records) upon completion
         if ($validated['status'] === 'completed') {
-            $age = $request->filled('age') ? (int) $request->input('age') : 30;
-            $gender = $request->input('gender') ?: 'other';
             $diagnosis = $request->input('diagnosis')
                 ?: ($appointment->symptoms ? 'Reported Symptoms: ' . $appointment->symptoms : 'Completed OPD Consultation (' . $appointment->department . ')');
             $treatment = $request->input('treatment')
@@ -264,22 +262,37 @@ class AppointmentController extends Controller
 
             $existingRecord = \App\Models\PatientRecord::where('hospital_id', $appointment->hospital_id)
                 ->where(function ($q) use ($appointment) {
-                    $q->where('patient_name', $appointment->patient_name);
+                    if (!empty($appointment->user_id)) {
+                        $q->where('user_id', $appointment->user_id);
+                    } else {
+                        $q->where('patient_name', $appointment->patient_name);
+                    }
                     if (!empty($appointment->patient_phone)) {
                         $q->orWhere('phone', $appointment->patient_phone);
                     }
                 })
                 ->first();
 
+            $age = $request->filled('age')
+                ? (int) $request->input('age')
+                : ($existingRecord?->age ?? 30);
+
+            $gender = $request->input('gender')
+                ?: ($existingRecord?->gender ?? 'other');
+
             if ($existingRecord) {
                 $existingRecord->update([
+                    'user_id'   => $existingRecord->user_id ?? $appointment->user_id,
                     'diagnosis' => $request->input('diagnosis') ?: $existingRecord->diagnosis,
                     'treatment' => $request->input('treatment') ?: $existingRecord->treatment,
                     'phone'     => $appointment->patient_phone ?: $existingRecord->phone,
+                    'age'       => $age,
+                    'gender'    => $gender,
                 ]);
             } else {
                 \App\Models\PatientRecord::create([
                     'hospital_id'  => $appointment->hospital_id,
+                    'user_id'      => $appointment->user_id,
                     'patient_name' => $appointment->patient_name,
                     'age'          => $age,
                     'gender'       => $gender,

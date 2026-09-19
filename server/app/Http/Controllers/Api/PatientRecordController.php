@@ -7,6 +7,7 @@ use App\Http\Requests\StorePatientRecordRequest;
 use App\Http\Requests\UpdatePatientRecordRequest;
 use App\Http\Resources\PatientRecordResource;
 use App\Models\PatientRecord;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -60,6 +61,58 @@ class PatientRecordController extends Controller
     }
 
     /**
+     * GET /api/my-medical-records
+     * A patient's own unified medical history — every record created
+     * for them by every hospital they have ever visited, not just one
+     * tenant. This intentionally bypasses hospital tenant isolation
+     * because the records belong to the patient, not to any single
+     * hospital.
+     */
+    public function myRecords(Request $request): AnonymousResourceCollection|JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'patient') {
+            return response()->json([
+                'message' => 'Forbidden. Only patients can view their unified medical records.',
+            ], 403);
+        }
+
+        $query = PatientRecord::with(['hospital', 'creator'])
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+
+                // As a safety net for older records created before a
+                // patient account existed / before linking, also surface
+                // records that match this patient's registered phone
+                // number but were never linked to a user_id yet.
+                if (! empty($user->phone)) {
+                    $q->orWhere(function ($sub) use ($user) {
+                        $sub->whereNull('user_id')->where('phone', $user->phone);
+                    });
+                }
+            });
+
+        // Optional filter by a specific hospital, while still pulling
+        // from every hospital by default.
+        if ($request->filled('hospital_id')) {
+            $query->where('hospital_id', (int) $request->hospital_id);
+        }
+
+        $records = $query->orderBy('created_at', 'desc')->get();
+
+        // Opportunistically backfill user_id on any phone-matched but
+        // unlinked records so future lookups are a direct, fast match.
+        if (! empty($user->phone)) {
+            PatientRecord::whereNull('user_id')
+                ->where('phone', $user->phone)
+                ->update(['user_id' => $user->id]);
+        }
+
+        return PatientRecordResource::collection($records);
+    }
+
+    /**
      * GET /api/patient-records/{id}
      * Show details of a specific patient record.
      */
@@ -67,6 +120,21 @@ class PatientRecordController extends Controller
     {
         $user = $request->user();
         $record = PatientRecord::with(['hospital', 'creator'])->findOrFail($id);
+
+        if ($user->role === 'patient') {
+            // A patient may only open a record that belongs to them,
+            // regardless of which hospital created it.
+            $belongsToPatient = (int) $record->user_id === (int) $user->id
+                || (! empty($user->phone) && $record->user_id === null && $record->phone === $user->phone);
+
+            if (! $belongsToPatient) {
+                return response()->json([
+                    'message' => 'Forbidden. You do not have permission to access this record.',
+                ], 403);
+            }
+
+            return new PatientRecordResource($record);
+        }
 
         // Tenant check: staff can only view records of their own hospital
         if (! $user->isSuperAdmin() && (int) $record->hospital_id !== (int) $user->hospital_id) {
@@ -107,6 +175,12 @@ class PatientRecordController extends Controller
         $validated['hospital_id'] = $hospitalId;
         $validated['created_by']  = $user->id;
 
+        // Link this record to the patient's own account (if one exists)
+        // so it shows up on their unified profile no matter which
+        // hospital created it. Matched by phone number since that is
+        // the one identifier staff always have on hand at intake.
+        $validated['user_id'] = $this->resolvePatientUserId($validated['phone'] ?? null);
+
         $record = PatientRecord::create($validated);
 
         return response()->json([
@@ -135,6 +209,11 @@ class PatientRecordController extends Controller
 
         // Prevent modification of tenant ownership and author by hospital staff
         unset($validated['hospital_id'], $validated['created_by']);
+
+        // Re-resolve the linked patient account if the phone number changed
+        if (array_key_exists('phone', $validated) && $validated['phone'] !== $record->phone) {
+            $validated['user_id'] = $this->resolvePatientUserId($validated['phone']);
+        }
 
         $record->update($validated);
 
@@ -165,5 +244,21 @@ class PatientRecordController extends Controller
         return response()->json([
             'message' => 'Patient record deleted successfully.',
         ]);
+    }
+
+    /**
+     * Try to find an existing patient account matching a phone number,
+     * so newly created hospital records can be linked to that patient's
+     * unified profile automatically.
+     */
+    private function resolvePatientUserId(?string $phone): ?int
+    {
+        if (empty($phone)) {
+            return null;
+        }
+
+        return User::where('role', 'patient')
+            ->where('phone', $phone)
+            ->value('id');
     }
 }

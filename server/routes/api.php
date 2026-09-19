@@ -122,6 +122,27 @@ Route::middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Patient Profile — Unified Medical Records (across ALL hospitals)
+|--------------------------------------------------------------------------
+|
+| GET /api/my-medical-records
+|   Returns every patient record ever created for the logged-in patient,
+|   from every hospital they have visited — not scoped to one tenant,
+|   because these records belong to the patient, not to a hospital.
+|
+| GET /api/my-medical-records/{id}
+|   Full detail of a single record from that list; ownership of the
+|   record is checked in the controller. Kept on its own path (rather
+|   than reusing /patient-records/{id}) so it never collides with the
+|   hospital-staff tenant-isolated route of the same shape below.
+*/
+Route::middleware(['auth:sanctum', 'role:patient'])->group(function () {
+    Route::get('/my-medical-records', [PatientRecordController::class, 'myRecords']);
+    Route::get('/my-medical-records/{id}', [PatientRecordController::class, 'show']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | Protected routes (hospital_staff only + tenant isolation)
 |--------------------------------------------------------------------------
 |

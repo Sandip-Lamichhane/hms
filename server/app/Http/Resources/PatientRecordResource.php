@@ -23,6 +23,7 @@ class PatientRecordResource extends JsonResource
                 'address' => $this->hospital->address,
                 'phone'   => $this->hospital->phone,
             ]),
+            'user_id'      => $this->user_id,
             'patient_name' => $this->patient_name,
             'age'          => (int) $this->age,
             'gender'       => $this->gender,
