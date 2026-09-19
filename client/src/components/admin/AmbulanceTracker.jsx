@@ -224,14 +224,14 @@ export default function AmbulanceTracker({
                   onClick={() => handleSelectAmbulance(amb)}
                   className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between ${
                     isSelected
-                      ? 'bg-emerald-950/40 border-emerald-500 text-slate-900 shadow-md'
-                      : 'bg-[#f0faf5] border-[#c8eedc] text-slate-600 hover:border-[#c8eedc]'
+                      ? 'bg-[#dff5ea] border-[#167a68] text-[#0b4d3c] shadow-xs'
+                      : 'bg-[#f0faf5] border-[#c8eedc] text-slate-600 hover:border-[#167a68]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        amb.is_available ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                        amb.is_available ? 'bg-[#dff5ea] text-[#167a68]' : 'bg-red-50 text-red-600'
                       }`}
                     >
                       <Truck className="w-4 h-4" />
@@ -246,8 +246,8 @@ export default function AmbulanceTracker({
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         amb.is_available
-                          ? 'bg-emerald-500/20 text-emerald-300'
-                          : 'bg-red-500/20 text-red-300'
+                          ? 'bg-[#dff5ea] text-[#167a68] border border-[#c8eedc]'
+                          : 'bg-red-50 text-red-600 border border-red-200'
                       }`}
                     >
                       {amb.is_available ? 'Available' : 'Busy'}
@@ -259,7 +259,7 @@ export default function AmbulanceTracker({
                           e.stopPropagation();
                           onDeleteAmbulance(amb.id, amb.vehicle_number);
                         }}
-                        className="p-1 rounded-lg hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors"
+                        className="p-1 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
                         title="Remove from fleet"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -286,7 +286,7 @@ export default function AmbulanceTracker({
               <button
                 type="button"
                 onClick={handleUseDeviceLocation}
-                className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-950/40 px-2.5 py-1 rounded-lg border border-emerald-800/40"
+                className="text-[11px] font-semibold text-[#167a68] hover:text-[#0b4d3c] flex items-center gap-1 bg-[#dff5ea] hover:bg-[#c8eedc] px-2.5 py-1 rounded-lg border border-[#c8eedc] transition-colors cursor-pointer"
               >
                 <Crosshair className="w-3 h-3" />
                 My GPS
@@ -363,7 +363,7 @@ export default function AmbulanceTracker({
             <button
               type="submit"
               disabled={isUpdating}
-              className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-900 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#167a68] hover:bg-[#116253] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
               {isUpdating ? (
                 <>

@@ -74,7 +74,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
     <div className="bg-white border border-[#c8eedc] rounded-2xl overflow-hidden shadow-xl">
       <div className="px-5 py-4 border-b border-[#c8eedc] flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-700 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-[#dff5ea] text-[#167a68] flex items-center justify-center">
             <Users className="w-5 h-5" />
           </div>
           <div>
@@ -125,7 +125,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                               Math.max(0, current.current_token - 1)
                             )
                           }
-                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center text-sm disabled:opacity-30"
+                          className="w-7 h-7 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm border border-slate-200 disabled:opacity-30"
                           disabled={current.current_token <= 0 || isUpdating}
                         >
                           -
@@ -141,7 +141,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                               Math.max(0, parseInt(e.target.value, 10) || 0)
                             )
                           }
-                          className="w-16 text-center font-black text-purple-700 bg-[#fbfdfc] border border-[#c8eedc] rounded-lg py-1 text-sm focus:outline-none focus:border-purple-500"
+                          className="w-16 text-center font-black text-[#167a68] bg-[#fbfdfc] border border-[#c8eedc] rounded-lg py-1 text-sm focus:outline-none focus:border-[#167a68]"
                         />
                         <button
                           type="button"
@@ -152,7 +152,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                               current.current_token + 1
                             )
                           }
-                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-100 text-slate-900 font-bold flex items-center justify-center text-sm"
+                          className="w-7 h-7 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm border border-slate-200"
                           disabled={isUpdating}
                         >
                           +
@@ -173,7 +173,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                               Math.max(0, parseInt(e.target.value, 10) || 0)
                             )
                           }
-                          className="w-16 text-center font-bold text-slate-900 bg-[#fbfdfc] border border-[#c8eedc] rounded-lg py-1 text-sm focus:outline-none focus:border-purple-500"
+                          className="w-16 text-center font-bold text-slate-900 bg-[#fbfdfc] border border-[#c8eedc] rounded-lg py-1 text-sm focus:outline-none focus:border-[#167a68]"
                         />
                         <span className="text-xs text-slate-500">mins</span>
                       </div>
@@ -183,12 +183,12 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                       <select
                         value={current.crowd_level}
                         onChange={(e) => handleChange(q.department, 'crowd_level', e.target.value)}
-                        className={`bg-[#fbfdfc] border border-[#c8eedc] rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none ${
+                        className={`bg-[#fbfdfc] border border-[#c8eedc] rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-[#167a68] ${
                           current.crowd_level === 'high'
-                            ? 'text-red-400'
+                            ? 'text-red-600'
                             : current.crowd_level === 'medium'
-                            ? 'text-amber-400'
-                            : 'text-emerald-400'
+                            ? 'text-amber-600'
+                            : 'text-emerald-700'
                         }`}
                       >
                         <option value="low">Low Crowd</option>
@@ -201,7 +201,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                       <button
                         onClick={() => handleCallNext(q)}
                         disabled={isUpdating}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-purple-600/20 text-purple-300 hover:bg-purple-600 hover:text-slate-900 border border-purple-500/30 transition-all cursor-pointer disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-[#dff5ea] text-[#167a68] hover:bg-[#167a68] hover:text-white border border-[#c8eedc] hover:border-[#167a68] transition-all cursor-pointer disabled:opacity-50"
                       >
                         <UserPlus className="w-3.5 h-3.5" />
                         Call Next (+1)
@@ -213,7 +213,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                         <button
                           onClick={() => handleSave(q.department)}
                           disabled={isUpdating}
-                          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-slate-900 shadow-md shadow-emerald-950/60 transition-all cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#167a68] hover:bg-[#116253] text-white shadow-sm transition-all cursor-pointer disabled:opacity-50"
                         >
                           {isUpdating ? (
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -225,7 +225,7 @@ export default function OPDUpdateForm({ queues = [], onUpdateQueue, onDeleteQueu
                         {onDeleteQueue && (
                           <button
                             onClick={() => onDeleteQueue(q.id, q.department)}
-                            className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-red-500/20 text-slate-500 hover:text-red-400 border border-[#c8eedc] hover:border-red-500/30 transition-all"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-200 hover:border-red-200 transition-all"
                             title="Remove department"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

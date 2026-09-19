@@ -81,9 +81,9 @@ export default function ManageOPD() {
   };
 
   const CROWD_LEVELS = [
-    { value: 'low', label: 'Low', color: 'text-emerald-400' },
-    { value: 'moderate', label: 'Moderate', color: 'text-amber-400' },
-    { value: 'high', label: 'High', color: 'text-red-400' },
+    { value: 'low', label: 'Low', color: 'text-[#167a68]' },
+    { value: 'moderate', label: 'Moderate', color: 'text-amber-700' },
+    { value: 'high', label: 'High', color: 'text-red-700' },
   ];
 
   return (
@@ -94,7 +94,7 @@ export default function ManageOPD() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Users className="w-4 h-4 text-purple-700" />
+            <Users className="w-4 h-4 text-[#167a68]" />
             <span>Patients waiting in hall receive live token updates on mobile and public screens</span>
           </div>
 
@@ -110,7 +110,7 @@ export default function ManageOPD() {
 
             <button
               onClick={() => setShowAddForm((p) => !p)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#167a68] hover:bg-[#116253] text-slate-900 text-xs font-semibold transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#167a68] hover:bg-[#116253] text-white text-xs font-semibold transition-colors"
             >
               {showAddForm ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
               {showAddForm ? 'Cancel' : 'Add Department'}
@@ -122,10 +122,10 @@ export default function ManageOPD() {
         {showAddForm && (
           <form
             onSubmit={handleAddQueue}
-            className="bg-white border border-purple-500/30 rounded-2xl p-5 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="bg-white border border-[#c8eedc] rounded-2xl p-5 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200"
           >
             <div className="flex items-center gap-2.5 border-b border-[#c8eedc] pb-3">
-              <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-700 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#dff5ea] text-[#167a68] flex items-center justify-center">
                 <Plus className="w-4 h-4" />
               </div>
               <div>
@@ -143,7 +143,7 @@ export default function ManageOPD() {
                   placeholder="e.g. Cardiology"
                   value={addForm.department}
                   onChange={(e) => setAddForm({ ...addForm, department: e.target.value })}
-                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-[#167a68]"
                 />
               </div>
 
@@ -154,7 +154,7 @@ export default function ManageOPD() {
                   min="0"
                   value={addForm.current_token}
                   onChange={(e) => setAddForm({ ...addForm, current_token: parseInt(e.target.value) || 0 })}
-                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#167a68]"
                 />
               </div>
 
@@ -165,7 +165,7 @@ export default function ManageOPD() {
                   min="0"
                   value={addForm.estimated_wait_mins}
                   onChange={(e) => setAddForm({ ...addForm, estimated_wait_mins: parseInt(e.target.value) || 0 })}
-                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#167a68]"
                 />
               </div>
 
@@ -174,7 +174,7 @@ export default function ManageOPD() {
                 <select
                   value={addForm.crowd_level}
                   onChange={(e) => setAddForm({ ...addForm, crowd_level: e.target.value })}
-                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#167a68]"
                 >
                   {CROWD_LEVELS.map((c) => (
                     <option key={c.value} value={c.value}>{c.label}</option>
@@ -187,7 +187,7 @@ export default function ManageOPD() {
               <button
                 type="submit"
                 disabled={isAdding}
-                className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#167a68] hover:bg-[#116253] text-slate-900 text-sm font-bold transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#167a68] hover:bg-[#116253] text-white text-sm font-bold transition-colors disabled:opacity-50"
               >
                 {isAdding ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 {isAdding ? 'Creating...' : 'Create Queue'}
@@ -195,7 +195,7 @@ export default function ManageOPD() {
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-100 text-slate-600 text-sm font-semibold transition-colors"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-sm font-semibold transition-colors"
               >
                 Cancel
               </button>
@@ -206,8 +206,8 @@ export default function ManageOPD() {
         {/* Empty state — no departments yet */}
         {!loading && queues.length === 0 && !showAddForm && (
           <div className="flex flex-col items-center justify-center py-16 text-center bg-white border border-dashed border-[#c8eedc] rounded-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-purple-700" />
+            <div className="w-16 h-16 rounded-2xl bg-[#dff5ea] border border-[#c8eedc] flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-[#167a68]" />
             </div>
             <h3 className="text-slate-900 font-bold text-lg mb-2">No OPD Departments Yet</h3>
             <p className="text-slate-500 text-sm max-w-xs mb-6">
@@ -215,7 +215,7 @@ export default function ManageOPD() {
             </p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#167a68] hover:bg-[#116253] text-slate-900 text-sm font-bold transition-colors shadow-lg shadow-purple-950/50"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#167a68] hover:bg-[#116253] text-white text-sm font-bold transition-colors shadow-lg shadow-[#167a68]/30"
             >
               <Plus className="w-4 h-4" />
               Add Your First Department

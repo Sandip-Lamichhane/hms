@@ -232,12 +232,12 @@ export default function ManageAppointments() {
           <div className="bg-white border border-[#c8eedc] rounded-2xl p-4 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Today's Schedule</span>
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#dff5ea] text-[#167a68] flex items-center justify-center">
                 <Clock className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-2xl sm:text-3xl font-black text-indigo-400">{stats.todayCount}</span>
+              <span className="text-2xl sm:text-3xl font-black text-[#167a68]">{stats.todayCount}</span>
               <p className="text-[11px] text-slate-500 mt-0.5">Scheduled today</p>
             </div>
           </div>
@@ -245,12 +245,12 @@ export default function ManageAppointments() {
           <div className="bg-white border border-[#c8eedc] rounded-2xl p-4 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Confirmed</span>
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#dff5ea] text-[#167a68] flex items-center justify-center">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-2xl sm:text-3xl font-black text-emerald-400">{stats.confirmed}</span>
+              <span className="text-2xl sm:text-3xl font-black text-[#167a68]">{stats.confirmed}</span>
               <p className="text-[11px] text-slate-500 mt-0.5">Awaiting visit</p>
             </div>
           </div>
@@ -258,12 +258,12 @@ export default function ManageAppointments() {
           <div className="bg-white border border-[#c8eedc] rounded-2xl p-4 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Completed</span>
-              <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-2xl sm:text-3xl font-black text-blue-400">{stats.completed}</span>
+              <span className="text-2xl sm:text-3xl font-black text-blue-600">{stats.completed}</span>
               <p className="text-[11px] text-slate-500 mt-0.5">Successfully served</p>
             </div>
           </div>
@@ -271,12 +271,12 @@ export default function ManageAppointments() {
           <div className="bg-white border border-[#c8eedc] rounded-2xl p-4 shadow-xl col-span-2 sm:col-span-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cancelled</span>
-              <div className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
                 <XCircle className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-2xl sm:text-3xl font-black text-rose-400">{stats.cancelled}</span>
+              <span className="text-2xl sm:text-3xl font-black text-rose-600">{stats.cancelled}</span>
               <p className="text-[11px] text-slate-500 mt-0.5">Revoked bookings</p>
             </div>
           </div>
@@ -330,7 +330,7 @@ export default function ManageAppointments() {
               {selectedDate && (
                 <button
                   onClick={() => setSelectedDate('')}
-                  className="text-xs text-rose-400 hover:underline px-1"
+                  className="text-xs text-rose-600 hover:underline px-1 font-medium"
                 >
                   Clear Date
                 </button>
@@ -339,15 +339,15 @@ export default function ManageAppointments() {
               <button
                 onClick={fetchAppointments}
                 disabled={loading}
-                className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-700 rounded-xl transition-colors disabled:opacity-50"
+                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-xl transition-colors disabled:opacity-50 border border-slate-200 cursor-pointer"
                 title="Refresh Appointments"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#167a68]' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#167a68]' : 'text-slate-600'}`} />
               </button>
 
               <button
                 onClick={() => setShowWalkinModal(true)}
-                className="flex items-center gap-1.5 px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-900 rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-950"
+                className="flex items-center gap-1.5 px-3 py-2 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>New Walk-in</span>
@@ -362,17 +362,17 @@ export default function ManageAppointments() {
             </span>
             {[
               { id: 'all', label: `All (${stats.total})` },
-              { id: 'confirmed', label: `Confirmed (${stats.confirmed})`, color: 'text-emerald-400' },
-              { id: 'completed', label: `Completed (${stats.completed})`, color: 'text-blue-400' },
-              { id: 'cancelled', label: `Cancelled (${stats.cancelled})`, color: 'text-rose-400' },
+              { id: 'confirmed', label: `Confirmed (${stats.confirmed})`, color: 'text-[#167a68]' },
+              { id: 'completed', label: `Completed (${stats.completed})`, color: 'text-blue-700' },
+              { id: 'cancelled', label: `Cancelled (${stats.cancelled})`, color: 'text-rose-700' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   statusFilter === tab.id
-                    ? 'bg-cyan-600 text-slate-900 shadow shadow-cyan-950'
-                    : 'bg-[#fbfdfc]/60 text-slate-500 hover:text-slate-900 hover:bg-emerald-50/60 border border-emerald-100'
+                    ? 'bg-[#167a68] text-white shadow-xs'
+                    : 'bg-[#fbfdfc] text-slate-600 hover:text-slate-900 hover:bg-emerald-50 border border-emerald-100'
                 }`}
               >
                 {tab.label}
@@ -448,10 +448,10 @@ export default function ManageAppointments() {
                               <span
                                 className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${
                                   isConfirmed
-                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                    ? 'bg-[#dff5ea] border-[#c8eedc] text-[#167a68]'
                                     : isCompleted
-                                    ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
-                                    : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                                    : 'bg-rose-50 border-rose-200 text-rose-700'
                                 }`}
                               >
                                 {isConfirmed && <CheckCircle2 className="w-2.5 h-2.5" />}
@@ -485,7 +485,7 @@ export default function ManageAppointments() {
                         {/* Department & Doctor */}
                         <td className="py-3.5 px-4">
                           <div className="space-y-0.5">
-                            <p className="font-semibold text-slate-200 flex items-center gap-1">
+                            <p className="font-semibold text-slate-800 flex items-center gap-1">
                               <Stethoscope className="w-3 h-3 text-[#167a68]" />
                               {apt.department}
                             </p>
@@ -524,7 +524,7 @@ export default function ManageAppointments() {
                                 <button
                                   onClick={() => handleStatusChange(apt.id, 'completed')}
                                   disabled={isBusy}
-                                  className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-slate-900 border border-emerald-600/40 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50"
+                                  className="px-2.5 py-1 bg-[#dff5ea] hover:bg-[#167a68] text-[#167a68] hover:text-white border border-[#c8eedc] rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50 cursor-pointer"
                                   title="Mark visit as completed"
                                 >
                                   Complete
@@ -532,7 +532,7 @@ export default function ManageAppointments() {
                                 <button
                                   onClick={() => handleStatusChange(apt.id, 'cancelled')}
                                   disabled={isBusy}
-                                  className="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-slate-900 border border-rose-600/40 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50"
+                                  className="px-2.5 py-1 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50 cursor-pointer"
                                   title="Cancel this appointment"
                                 >
                                   Cancel
@@ -544,14 +544,14 @@ export default function ManageAppointments() {
                               <button
                                 onClick={() => handleStatusChange(apt.id, 'confirmed')}
                                 disabled={isBusy}
-                                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-700 rounded-lg text-[11px] font-medium transition-all"
+                                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 rounded-lg text-[11px] font-medium transition-all cursor-pointer"
                               >
                                 Re-open
                               </button>
                             )}
 
                             {isCompleted && (
-                              <span className="text-[11px] font-semibold text-emerald-400/80 flex items-center gap-1">
+                              <span className="text-[11px] font-semibold text-[#167a68] flex items-center gap-1">
                                 <CheckCircle2 className="w-3.5 h-3.5" /> Served
                               </span>
                             )}
@@ -602,10 +602,10 @@ export default function ManageAppointments() {
                 <span
                   className={`font-bold uppercase px-2.5 py-0.5 rounded-full text-[11px] ${
                     selectedApt.status === 'confirmed'
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      ? 'bg-[#dff5ea] text-[#167a68] border border-[#c8eedc]'
                       : selectedApt.status === 'completed'
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                      : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                      : 'bg-rose-50 text-rose-700 border border-rose-200'
                   }`}
                 >
                   {selectedApt.status}
@@ -672,13 +672,13 @@ export default function ManageAppointments() {
                 <>
                   <button
                     onClick={() => handleStatusChange(selectedApt.id, 'completed')}
-                    className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-900 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     <CheckCircle2 className="w-4 h-4" /> Mark as Completed
                   </button>
                   <button
                     onClick={() => handleStatusChange(selectedApt.id, 'cancelled')}
-                    className="flex-1 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-slate-900 border border-rose-600/40 rounded-xl font-bold text-xs transition-colors"
+                    className="flex-1 py-2.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 rounded-xl font-bold text-xs transition-colors cursor-pointer"
                   >
                     Cancel Booking
                   </button>
@@ -687,14 +687,14 @@ export default function ManageAppointments() {
               {selectedApt.status !== 'confirmed' && (
                 <button
                   onClick={() => handleStatusChange(selectedApt.id, 'confirmed')}
-                  className="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-900 rounded-xl font-bold text-xs transition-colors"
+                  className="flex-1 py-2.5 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl font-bold text-xs transition-colors cursor-pointer shadow-sm"
                 >
                   Set as Confirmed
                 </button>
               )}
               <button
                 onClick={() => window.print()}
-                className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-700 rounded-xl transition-colors"
+                className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 rounded-xl transition-colors"
                 title="Print Pass"
               >
                 <Printer className="w-4 h-4" />
@@ -705,7 +705,7 @@ export default function ManageAppointments() {
       )}
       {/* Walk-in Appointment Registration Modal */}
       {showWalkinModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#fbfdfc]/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white border border-[#c8eedc] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
               <div>
@@ -718,7 +718,7 @@ export default function ManageAppointments() {
               </div>
               <button
                 onClick={() => setShowWalkinModal(false)}
-                className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-emerald-50 rounded-xl"
+                className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-emerald-50 rounded-xl cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -726,7 +726,7 @@ export default function ManageAppointments() {
 
             <form onSubmit={handleWalkinSubmit} className="space-y-4 text-xs">
               <div className="p-3 bg-[#dff5ea]/30 border border-[#c2ebd5]/40 rounded-xl text-[#0b4d3c] flex items-center gap-2">
-                <Building2 className="w-4 h-4 shrink-0" />
+                <Building2 className="w-4 h-4 shrink-0 text-[#167a68]" />
                 <span>Booking appointment for: <strong>Hospital #{hospitalId}</strong></span>
               </div>
 
@@ -739,7 +739,7 @@ export default function ManageAppointments() {
                     value={walkinForm.patient_name}
                     onChange={(e) => setWalkinForm({ ...walkinForm, patient_name: e.target.value })}
                     placeholder="Full Name"
-                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -750,7 +750,7 @@ export default function ManageAppointments() {
                     value={walkinForm.patient_phone}
                     onChange={(e) => setWalkinForm({ ...walkinForm, patient_phone: e.target.value })}
                     placeholder="98XXXXXXXX"
-                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                   />
                 </div>
               </div>
@@ -762,7 +762,7 @@ export default function ManageAppointments() {
                   value={walkinForm.patient_email}
                   onChange={(e) => setWalkinForm({ ...walkinForm, patient_email: e.target.value })}
                   placeholder="patient@example.com"
-                  className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                 />
               </div>
 
@@ -772,7 +772,7 @@ export default function ManageAppointments() {
                   <select
                     value={walkinForm.department}
                     onChange={(e) => setWalkinForm({ ...walkinForm, department: e.target.value })}
-                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                   >
                     {['General Medicine', 'Cardiology', 'Orthopedics', 'Pediatrics', 'Neurology', 'ENT', 'Dermatology', 'Gynecology'].map((dept) => (
                       <option key={dept} value={dept}>{dept}</option>
@@ -786,7 +786,7 @@ export default function ManageAppointments() {
                     value={walkinForm.doctor_name}
                     onChange={(e) => setWalkinForm({ ...walkinForm, doctor_name: e.target.value })}
                     placeholder="e.g. Dr. K.P. Sharma"
-                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                   />
                 </div>
               </div>
@@ -799,7 +799,7 @@ export default function ManageAppointments() {
                     required
                     value={walkinForm.appointment_date}
                     onChange={(e) => setWalkinForm({ ...walkinForm, appointment_date: e.target.value })}
-                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -807,7 +807,7 @@ export default function ManageAppointments() {
                   <select
                     value={walkinForm.time_slot}
                     onChange={(e) => setWalkinForm({ ...walkinForm, time_slot: e.target.value })}
-                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                   >
                     {['09:00 AM - 09:30 AM', '10:00 AM - 10:30 AM', '11:00 AM - 11:30 AM', '12:00 PM - 12:30 PM', '02:00 PM - 02:30 PM', '03:00 PM - 03:30 PM', '04:00 PM - 04:30 PM'].map((slot) => (
                       <option key={slot} value={slot}>{slot}</option>
@@ -823,7 +823,7 @@ export default function ManageAppointments() {
                   value={walkinForm.symptoms}
                   onChange={(e) => setWalkinForm({ ...walkinForm, symptoms: e.target.value })}
                   placeholder="Reason for visit or symptoms..."
-                  className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
                 />
               </div>
 
@@ -831,14 +831,14 @@ export default function ManageAppointments() {
                 <button
                   type="button"
                   onClick={() => setShowWalkinModal(false)}
-                  className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-700 rounded-xl font-semibold text-xs transition-colors"
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 rounded-xl font-semibold text-xs transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={walkinSubmitting}
-                  className="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-slate-900 rounded-xl font-bold text-xs transition-colors disabled:opacity-50 shadow-lg shadow-cyan-950"
+                  className="flex-1 py-2.5 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl font-bold text-xs transition-colors disabled:opacity-50 shadow-sm cursor-pointer"
                 >
                   {walkinSubmitting ? 'Registering...' : 'Register Appointment'}
                 </button>

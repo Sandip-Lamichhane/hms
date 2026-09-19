@@ -41,6 +41,7 @@ hms/
 │   │   └── App.jsx         # Client routes
 │   ├── package.json
 │   └── vite.config.js
+
 ├── server/                 # Laravel API and WebSocket server
 │   ├── app/
 │   │   ├── Http/           # Controllers, middleware, requests, and resources

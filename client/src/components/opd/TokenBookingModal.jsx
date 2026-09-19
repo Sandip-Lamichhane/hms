@@ -251,7 +251,7 @@ const TokenBookingModal = ({
                   <input
                     type="number"
                     min="1"
-                    max="120"
+                    max="100"
                     placeholder="e.g. 35"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                     value={age}

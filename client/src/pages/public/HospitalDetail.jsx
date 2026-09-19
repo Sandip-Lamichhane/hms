@@ -136,25 +136,42 @@ const HospitalDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Blood Bank */}
           <section className="bg-white rounded-2xl shadow-sm border border-[#c8eedc] overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#dff5ea] bg-[#f7fcf9] flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-rose-100 flex items-center justify-center">
-                <Droplets className="w-4 h-4 text-rose-600" />
+            <div className="px-6 py-4 border-b border-[#dff5ea] bg-[#f7fcf9] flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-rose-100 flex items-center justify-center">
+                  <Droplets className="w-4 h-4 text-rose-600" />
+                </div>
+                <h2 className="text-base font-bold text-[#0b4d3c]">Blood Bank Stock</h2>
               </div>
-              <h2 className="text-base font-bold text-[#0b4d3c]">Blood Bank Stock</h2>
+              {hospital.blood_bank && Object.keys(hospital.blood_bank).length > 0 && (
+                <span className="text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                  Live Stock
+                </span>
+              )}
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-4 gap-4">
-                {Object.entries(hospital.blood_bank).map(([group, units]) => (
-                  <div key={group} className="text-center">
-                    <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center font-bold text-sm mb-1.5 shadow-sm border border-rose-100 text-rose-600 bg-rose-50">
-                      {group}
+              {hospital.blood_bank && Object.keys(hospital.blood_bank).length > 0 ? (
+                <div className="grid grid-cols-4 gap-4">
+                  {Object.entries(hospital.blood_bank).map(([group, units]) => (
+                    <div key={group} className="text-center">
+                      <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center font-bold text-sm mb-1.5 shadow-sm border border-rose-100 text-rose-600 bg-rose-50">
+                        {group}
+                      </div>
+                      <div className="text-sm font-semibold text-slate-800">
+                        {units} <span className="text-xs text-slate-500 font-normal">units</span>
+                      </div>
                     </div>
-                    <div className="text-sm font-semibold text-slate-800">
-                      {units} <span className="text-xs text-slate-500 font-normal">units</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 px-4">
+                  <Droplets className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-slate-700">No Blood Bank Facility</p>
+                  <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                    This hospital does not operate an on-site blood bank repository. Please consult Bir Hospital or TUTH central blood banks.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 
