@@ -6,6 +6,7 @@ import Layout from "../Layouts/Layout";
 import Home from "../pages/Home";
 import Login from "../pages/authentication/Login";
 import Register from "../pages/authentication/Register";
+import Services from "../pages/services/services.jsx";
 
 function AppRoutes() {
   return (
@@ -13,18 +14,17 @@ function AppRoutes() {
 
       {/* Pages with Navbar + Footer */}
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
 
-        <Route path="/departments" element={<div>Departments</div>} />
-        <Route path="/services" element={<div>Services</div>} />
-        <Route path="/about" element={<div>About Us</div>} />
-      </Route>
+  <Route path="/" element={<Home />} />
 
+  <Route path="/login" element={<Login />} />
 
-      {/* Authentication Pages - NO Navbar / Footer */}
-      <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
 
-      <Route path="/register" element={<Register />} />
+  <Route path="/services" element={<Services />} />
+
+</Route>
+
 
     </Routes>
   );
