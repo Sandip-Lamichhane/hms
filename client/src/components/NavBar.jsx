@@ -21,8 +21,8 @@ function NavBar() {
           Home
         </Link>
 
-        <Link to="/departments">
-          Departments
+        <Link to="/Contact Us">
+          Contact Us
         </Link>
 
         <Link to="/services">
