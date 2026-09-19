@@ -63,10 +63,10 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-emerald-500/30 rounded-2xl p-5 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200"
+      className="bg-white border border-[#c8eedc] rounded-2xl p-5 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200"
     >
       <div className="flex items-center gap-2.5 border-b border-[#c8eedc] pb-3">
-        <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-xl bg-[#dff5ea] text-[#167a68] flex items-center justify-center">
           <Truck className="w-4 h-4" />
         </div>
         <div>
@@ -87,7 +87,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
             placeholder="e.g. BA 1 KHA 1234"
             value={formData.vehicle_number}
             onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value })}
-            className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#167a68]"
           />
         </div>
 
@@ -102,7 +102,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
             placeholder="e.g. Ram Bahadur"
             value={formData.driver_name}
             onChange={(e) => setFormData({ ...formData, driver_name: e.target.value })}
-            className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#167a68]"
           />
         </div>
 
@@ -117,7 +117,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
             placeholder="e.g. 9800000000"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#167a68]"
           />
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
           <button
             type="button"
             onClick={handleUseDeviceLocation}
-            className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-950/40 px-2.5 py-1 rounded-lg border border-emerald-800/40 transition-colors"
+            className="text-[11px] font-semibold text-[#167a68] hover:text-[#0b4d3c] flex items-center gap-1 bg-[#dff5ea] hover:bg-[#c8eedc] px-2.5 py-1 rounded-lg border border-[#c8eedc] transition-colors cursor-pointer"
           >
             <Crosshair className="w-3 h-3" />
             Use My GPS
@@ -145,7 +145,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
               step="any"
               value={formData.latitude}
               onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:border-[#167a68]"
             />
           </div>
           <div>
@@ -155,7 +155,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
               step="any"
               value={formData.longitude}
               onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:border-[#167a68]"
             />
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
           type="checkbox"
           checked={formData.is_available}
           onChange={(e) => setFormData({ ...formData, is_available: e.target.checked })}
-          className="w-4 h-4 text-emerald-600 rounded bg-white border-[#c8eedc] focus:ring-emerald-500"
+          className="w-4 h-4 text-[#167a68] rounded bg-white border-[#c8eedc] focus:ring-[#167a68]"
         />
         <div>
           <p className="text-xs font-bold text-slate-900">Mark as Available</p>
@@ -179,7 +179,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-900 text-sm font-bold transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[#167a68] hover:bg-[#116253] text-white text-sm font-bold transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
         >
           {isSubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
           {isSubmitting ? 'Adding...' : 'Add to Fleet'}
@@ -187,7 +187,7 @@ export default function AddAmbulanceForm({ hospitalCoords, onAdd, onCancel }) {
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-100 text-slate-600 text-sm font-semibold transition-colors"
+          className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-sm font-semibold transition-colors cursor-pointer"
         >
           Cancel
         </button>

@@ -16,11 +16,11 @@ import { getGlobalStats } from '../../services/superAdminService';
 
 function StatCard({ icon: Icon, label, value, sub, trend, color = 'emerald' }) {
   const iconColors = {
-    indigo: 'bg-indigo-50 text-indigo-700',
+    indigo: 'bg-[#eaf8f1] text-[#0b4d3c]',
     emerald: 'bg-[#dff5ea] text-[#167a68]',
     rose: 'bg-rose-50 text-rose-600',
     amber: 'bg-amber-50 text-amber-700',
-    purple: 'bg-purple-50 text-purple-700',
+    purple: 'bg-[#dff5ea] text-[#167a68]',
   };
 
   return (
@@ -103,7 +103,7 @@ export default function SuperAdminDashboard() {
           value={loading ? '...' : (stats?.hospitals?.total ?? stats?.total_hospitals ?? '—')}
           sub="Across all provinces"
           trend={4}
-          color="indigo"
+          color="emerald"
         />
         <StatCard
           icon={BedDouble}
@@ -127,7 +127,7 @@ export default function SuperAdminDashboard() {
           value={loading ? '...' : (stats?.users?.total ?? stats?.total_users ?? '—')}
           sub="All roles combined"
           trend={12}
-          color="purple"
+          color="emerald"
         />
       </div>
 

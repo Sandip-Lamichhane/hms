@@ -67,7 +67,7 @@ const HospitalList = () => {
                   className="h-9 sm:h-10 w-auto object-contain"
                 />
               </Link>
-              <span className="text-slate-200">/</span>
+              <span className="text-slate-400">/</span>
               <h1 className="font-serif text-lg sm:text-xl font-bold text-[#0b4d3c]">
                 Find Hospitals
               </h1>

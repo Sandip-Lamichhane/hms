@@ -48,8 +48,8 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#c8eedc]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/25 flex items-center justify-center">
-              <User className="w-4 h-4 text-purple-700" />
+            <div className="w-8 h-8 rounded-xl bg-[#dff5ea] border border-[#c8eedc] flex items-center justify-center">
+              <User className="w-4 h-4 text-[#167a68]" />
             </div>
             <h2 className="text-slate-900 font-semibold">{isEdit ? 'Edit User' : 'Add New User'}</h2>
           </div>
@@ -66,7 +66,7 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
               required
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full bg-slate-800 border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#167a68] transition-colors"
             />
           </div>
           {/* Email */}
@@ -77,7 +77,7 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
               required
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              className="w-full bg-slate-800 border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#167a68] transition-colors"
             />
           </div>
           {/* Password */}
@@ -90,7 +90,7 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
               required={!isEdit}
               value={form.password}
               onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              className="w-full bg-slate-800 border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+              className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#167a68] transition-colors"
             />
           </div>
           {/* Role */}
@@ -100,7 +100,7 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
               <select
                 value={form.role}
                 onChange={(e) => setForm((f) => ({ ...f, role: e.target.value, hospital_id: '' }))}
-                className="w-full bg-slate-800 border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 appearance-none focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 appearance-none focus:outline-none focus:border-[#167a68] transition-colors"
               >
                 {ROLES.map((r) => (
                   <option key={r} value={r}>
@@ -119,7 +119,7 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
                 <select
                   value={form.hospital_id}
                   onChange={(e) => setForm((f) => ({ ...f, hospital_id: e.target.value }))}
-                  className="w-full bg-slate-800 border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 appearance-none focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2.5 text-sm text-slate-900 appearance-none focus:outline-none focus:border-[#167a68] transition-colors"
                 >
                   <option value="">— Select Hospital —</option>
                   {hospitals.map((h) => (
@@ -131,13 +131,13 @@ function UserModal({ user: initialUser, hospitals, onClose, onSave }) {
             </div>
           )}
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-100 text-slate-600 text-sm font-medium transition-colors">
+            <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-sm font-medium transition-colors">
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-[#167a68] hover:bg-[#116253] disabled:opacity-60 text-slate-900 text-sm font-medium transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-[#167a68] hover:bg-[#116253] disabled:opacity-60 text-white text-sm font-medium transition-colors"
             >
               {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Create User'}
             </button>
@@ -167,8 +167,8 @@ function DeleteUserModal({ user, onClose, onConfirm }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-white border border-[#c8eedc] rounded-2xl w-full max-w-sm p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/25 flex items-center justify-center">
-            <AlertTriangle className="w-5 h-5 text-red-400" />
+          <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
           </div>
           <div>
             <h2 className="text-slate-900 font-semibold">Delete User</h2>
@@ -179,10 +179,10 @@ function DeleteUserModal({ user, onClose, onConfirm }) {
           Are you sure you want to delete <strong>{user.name}</strong>?
         </p>
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-100 text-slate-600 text-sm font-medium transition-colors">
+          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-sm font-medium transition-colors cursor-pointer">
             Cancel
           </button>
-          <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-60 text-slate-900 text-sm font-medium transition-colors">
+          <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-60 text-white text-sm font-medium transition-colors cursor-pointer">
             {deleting ? 'Deleting…' : 'Delete'}
           </button>
         </div>
@@ -259,7 +259,7 @@ export default function UserManagement() {
         </div>
         <button
           onClick={() => setModal({ type: 'add' })}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#167a68] hover:bg-[#116253] text-slate-900 text-sm font-medium transition-colors shadow-lg shadow-purple-500/20"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#167a68] hover:bg-[#116253] text-white text-sm font-medium transition-colors shadow-lg shadow-[#167a68]/20"
         >
           <Plus className="w-4 h-4" />
           Add User
@@ -275,7 +275,7 @@ export default function UserManagement() {
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white border border-[#c8eedc] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+            className="w-full bg-white border border-[#c8eedc] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:border-[#167a68] transition-colors"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900">
@@ -287,7 +287,7 @@ export default function UserManagement() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-white border border-[#c8eedc] rounded-xl px-4 py-2.5 text-sm text-slate-900 appearance-none focus:outline-none focus:border-purple-500 transition-colors pr-8"
+            className="bg-white border border-[#c8eedc] rounded-xl px-4 py-2.5 text-sm text-slate-900 appearance-none focus:outline-none focus:border-[#167a68] transition-colors pr-8"
           >
             <option value="">All Roles</option>
             {ROLES.map((r) => (

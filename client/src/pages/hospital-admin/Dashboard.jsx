@@ -234,7 +234,7 @@ export default function Dashboard() {
           <div className="bg-white border border-[#c8eedc] rounded-3xl p-5 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Avg OPD Wait</span>
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-2xl bg-[#dff5ea] text-[#167a68] flex items-center justify-center">
                 <Clock className="w-5 h-5" />
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function Dashboard() {
               <span className="text-xs text-slate-500 font-semibold">minutes</span>
             </div>
             <p className="mt-3 text-xs text-slate-500 flex items-center gap-1 font-medium">
-              <Users className="w-3.5 h-3.5 text-purple-600" />
+              <Users className="w-3.5 h-3.5 text-[#167a68]" />
               Across {stats.totalQueues} departments
             </p>
           </div>
@@ -326,7 +326,7 @@ export default function Dashboard() {
               className="flex items-center justify-between p-3.5 bg-[#fbfdfc] hover:bg-[#dff5ea] border border-emerald-100 hover:border-emerald-300 rounded-2xl transition-all group"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-purple-50 text-purple-700 group-hover:scale-105 transition-transform">
+                <div className="p-2 rounded-xl bg-[#dff5ea] text-[#167a68] group-hover:scale-105 transition-transform">
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
@@ -334,7 +334,7 @@ export default function Dashboard() {
                   <p className="text-[10px] text-slate-500">Tokens & queues</p>
                 </div>
               </div>
-              <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-purple-700 transition-colors" />
+              <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#167a68] transition-colors" />
             </Link>
 
             <Link
