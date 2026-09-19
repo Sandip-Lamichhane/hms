@@ -59,10 +59,10 @@ const Home = () => {
                 Home
               </a>
               <a
-                href="#contact"
+                href="#about"
                 className="text-slate-700 hover:text-emerald-700 font-medium text-sm transition-colors"
               >
-                Contact Us
+                About Us
               </a>
               <a
                 href="#services"
@@ -71,10 +71,10 @@ const Home = () => {
                 Services
               </a>
               <a
-                href="#about"
+                href="#contact"
                 className="text-slate-700 hover:text-emerald-700 font-medium text-sm transition-colors"
               >
-                About Us
+                Contact Us
               </a>
 
               {isAuthenticated ? (
@@ -83,8 +83,8 @@ const Home = () => {
                     user?.role === 'super_admin'
                       ? '/admin/dashboard'
                       : user?.role === 'hospital_admin' || user?.role === 'hospital_staff'
-                      ? '/hospital/dashboard'
-                      : '/user/dashboard'
+                        ? '/hospital/dashboard'
+                        : '/user/dashboard'
                   }
                   className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full bg-emerald-700 text-white hover:bg-emerald-800 transition-all shadow-sm shadow-emerald-700/20"
                 >
