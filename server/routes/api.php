@@ -168,13 +168,17 @@ Route::middleware(['auth:sanctum', 'role:hospital_staff,hospital_admin,super_adm
         Route::put('/patient-records/{id}', [PatientRecordController::class, 'update']);
         Route::delete('/patient-records/{id}', [PatientRecordController::class, 'destroy']);
 
-        // Hospital Staff Management (hospital_admin & super_admin only)
+        // Hospital Staff Management (hospital_admin & super_admin ONLY — staff cannot manage other staff)
         Route::middleware('role:hospital_admin,super_admin')->group(function () {
             Route::get('/hospitals/{id}/staff', [HospitalStaffController::class, 'index']);
             Route::post('/hospitals/{id}/staff', [HospitalStaffController::class, 'store']);
             Route::put('/hospitals/{id}/staff/{userId}', [HospitalStaffController::class, 'update']);
             Route::delete('/hospitals/{id}/staff/{userId}', [HospitalStaffController::class, 'destroy']);
         });
+
+        // Register Patient directly from hospital portal (hospital_staff & hospital_admin)
+        // Used for patients who find it difficult to self-register online
+        Route::post('/hospital/register-patient', [AuthController::class, 'registerPatientByStaff']);
     });
 
 /*

@@ -61,6 +61,26 @@ export default function ManageAppointments() {
     symptoms: '',
   });
 
+  // Completion modal state with problem diagnosis
+  const [completingApt, setCompletingApt] = useState(null);
+  const [completingSubmitting, setCompletingSubmitting] = useState(false);
+  const [diagnosisForm, setDiagnosisForm] = useState({
+    diagnosis: '',
+    treatment: '',
+    age: '30',
+    gender: 'male',
+  });
+
+  const openCompleteModal = (apt) => {
+    setCompletingApt(apt);
+    setDiagnosisForm({
+      diagnosis: apt.symptoms ? `Diagnosed for: ${apt.symptoms}` : '',
+      treatment: '',
+      age: '30',
+      gender: 'male',
+    });
+  };
+
   const handleWalkinSubmit = async (e) => {
     e.preventDefault();
     if (!walkinForm.patient_name.trim() || !walkinForm.patient_phone.trim()) {
@@ -152,10 +172,10 @@ export default function ManageAppointments() {
   );
 
   // Status update handler
-  const handleStatusChange = async (appointmentId, newStatus) => {
+  const handleStatusChange = async (appointmentId, newStatus, extra = {}) => {
     setUpdatingId(appointmentId);
     try {
-      await updateAppointmentStatus(appointmentId, newStatus);
+      await updateAppointmentStatus(appointmentId, newStatus, extra);
       toast.success(`Appointment marked as ${newStatus}`);
       setAppointments((prev) =>
         prev.map((a) => (a.id === appointmentId ? { ...a, status: newStatus } : a))
@@ -168,6 +188,34 @@ export default function ManageAppointments() {
       toast.error('Failed to update status.');
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleCompleteSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!completingApt) return;
+
+    setCompletingSubmitting(true);
+    try {
+      await updateAppointmentStatus(completingApt.id, 'completed', {
+        diagnosis: diagnosisForm.diagnosis || undefined,
+        treatment: diagnosisForm.treatment || undefined,
+        age: diagnosisForm.age ? parseInt(diagnosisForm.age, 10) : 30,
+        gender: diagnosisForm.gender || 'other',
+      });
+      toast.success('Visit marked completed & recorded in Patient Details!');
+      setAppointments((prev) =>
+        prev.map((a) => (a.id === completingApt.id ? { ...a, status: 'completed' } : a))
+      );
+      if (selectedApt && selectedApt.id === completingApt.id) {
+        setSelectedApt((prev) => ({ ...prev, status: 'completed' }));
+      }
+      setCompletingApt(null);
+    } catch (err) {
+      console.error('Status update failed:', err);
+      toast.error('Failed to complete appointment.');
+    } finally {
+      setCompletingSubmitting(false);
     }
   };
 
@@ -522,10 +570,10 @@ export default function ManageAppointments() {
                             {isConfirmed && (
                               <>
                                 <button
-                                  onClick={() => handleStatusChange(apt.id, 'completed')}
+                                  onClick={() => openCompleteModal(apt)}
                                   disabled={isBusy}
                                   className="px-2.5 py-1 bg-[#dff5ea] hover:bg-[#167a68] text-[#167a68] hover:text-white border border-[#c8eedc] rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50 cursor-pointer"
-                                  title="Mark visit as completed"
+                                  title="Complete visit & record diagnosis"
                                 >
                                   Complete
                                 </button>
@@ -671,7 +719,11 @@ export default function ManageAppointments() {
               {selectedApt.status === 'confirmed' && (
                 <>
                   <button
-                    onClick={() => handleStatusChange(selectedApt.id, 'completed')}
+                    onClick={() => {
+                      const apt = selectedApt;
+                      setSelectedApt(null);
+                      openCompleteModal(apt);
+                    }}
                     className="flex-1 py-2.5 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                   >
                     <CheckCircle2 className="w-4 h-4" /> Mark as Completed
@@ -841,6 +893,130 @@ export default function ManageAppointments() {
                   className="flex-1 py-2.5 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl font-bold text-xs transition-colors disabled:opacity-50 shadow-sm cursor-pointer"
                 >
                   {walkinSubmitting ? 'Registering...' : 'Register Appointment'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Complete Appointment & Add Problem Diagnosis Modal */}
+      {completingApt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white border border-[#c8eedc] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#167a68]">
+                  Complete Patient Visit
+                </span>
+                <h3 className="text-base font-black text-slate-900 mt-0.5">
+                  Record Diagnosis & Finish Consultation
+                </h3>
+              </div>
+              <button
+                onClick={() => setCompletingApt(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-emerald-50 rounded-xl"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Patient Header Summary */}
+            <div className="bg-[#f0faf5] rounded-2xl p-3.5 border border-[#c2ebd5] flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-black text-xs text-[#0b4d3c] bg-white px-2 py-0.5 rounded border border-[#c8eedc]">
+                    {completingApt.token_number}
+                  </span>
+                  <p className="font-bold text-slate-900 text-sm">{completingApt.patient_name}</p>
+                </div>
+                <p className="text-slate-500 text-xs mt-1">
+                  {completingApt.department} • {completingApt.doctor_name ? `Dr. ${completingApt.doctor_name}` : 'General Consultant'}
+                </p>
+              </div>
+              <div className="text-right text-xs text-slate-500">
+                <p className="font-medium">{completingApt.patient_phone}</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleCompleteSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-slate-700 font-semibold text-[11px]">Patient Age</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="120"
+                    value={diagnosisForm.age}
+                    onChange={(e) => setDiagnosisForm({ ...diagnosisForm, age: e.target.value })}
+                    placeholder="e.g. 30"
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-slate-700 font-semibold text-[11px]">Gender</label>
+                  <select
+                    value={diagnosisForm.gender}
+                    onChange={(e) => setDiagnosisForm({ ...diagnosisForm, gender: e.target.value })}
+                    className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-slate-700 font-semibold text-[11px] flex items-center justify-between">
+                  <span>Problem Diagnosis <span className="text-rose-500">*</span></span>
+                  <span className="text-[10px] text-slate-500 font-normal">Auto-saved to Patient Details</span>
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  value={diagnosisForm.diagnosis}
+                  onChange={(e) => setDiagnosisForm({ ...diagnosisForm, diagnosis: e.target.value })}
+                  placeholder="Enter medical diagnosis (e.g. Acute viral rhinitis, Type 2 Diabetes, Migraine)..."
+                  className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-slate-700 font-semibold text-[11px]">
+                  Treatment & Prescriptions (Optional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={diagnosisForm.treatment}
+                  onChange={(e) => setDiagnosisForm({ ...diagnosisForm, treatment: e.target.value })}
+                  placeholder="Prescribed medicine, dosage, clinical advice..."
+                  className="w-full bg-[#fbfdfc] border border-emerald-100 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-[#167a68]"
+                />
+              </div>
+
+              <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-[11px] text-[#0b4d3c] flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#167a68] shrink-0 mt-0.5" />
+                <span>
+                  Completing this visit will automatically add this patient to the <strong>Patient Records</strong> (Patient Details) section with this diagnosis, where staff can view or update it anytime.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2 border-t border-emerald-100">
+                <button
+                  type="button"
+                  onClick={() => setCompletingApt(null)}
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 rounded-xl font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={completingSubmitting}
+                  className="flex-1 py-2.5 bg-[#167a68] hover:bg-[#116253] text-white rounded-xl font-bold text-xs transition-colors disabled:opacity-50 shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  {completingSubmitting ? 'Saving...' : 'Complete & Save Diagnosis'}
                 </button>
               </div>
             </form>

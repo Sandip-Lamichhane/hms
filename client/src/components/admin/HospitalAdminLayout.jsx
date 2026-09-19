@@ -16,18 +16,20 @@ import {
   Menu,
   X,
   ShieldCheck,
+  UserPlus,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useActiveHospital } from '../../hooks/useActiveHospital';
 
 const NAV_LINKS = [
-  { to: '/hospital/dashboard',    label: 'Dashboard',    icon: LayoutDashboard, color: 'text-emerald-700' },
-  { to: '/hospital/appointments', label: 'Appointments', icon: CalendarCheck,   color: 'text-teal-700' },
-  { to: '/hospital/beds',         label: 'Beds',         icon: BedDouble,       color: 'text-emerald-700' },
-  { to: '/hospital/ambulances',   label: 'Ambulances',   icon: Ambulance,       color: 'text-rose-600' },
-  { to: '/hospital/opd',          label: 'OPD Queue',    icon: Clock,           color: 'text-emerald-700' },
-  { to: '/hospital/patients',     label: 'Patients',     icon: FileText,        color: 'text-teal-700' },
-  { to: '/hospital/staff',        label: 'Staff',        icon: Users,           color: 'text-emerald-700', adminOnly: true },
+  { to: '/hospital/dashboard',         label: 'Dashboard',       icon: LayoutDashboard, color: 'text-emerald-700' },
+  { to: '/hospital/appointments',      label: 'Appointments',    icon: CalendarCheck,   color: 'text-teal-700' },
+  { to: '/hospital/beds',              label: 'Beds',            icon: BedDouble,       color: 'text-emerald-700' },
+  { to: '/hospital/ambulances',        label: 'Ambulances',      icon: Ambulance,       color: 'text-rose-600' },
+  { to: '/hospital/opd',              label: 'OPD Queue',        icon: Clock,           color: 'text-emerald-700' },
+  { to: '/hospital/patients',          label: 'Patients',        icon: FileText,        color: 'text-teal-700' },
+  { to: '/hospital/register-patient', label: 'Register Patient', icon: UserPlus,        color: 'text-blue-600' },
+  { to: '/hospital/staff',             label: 'Staff',           icon: Users,           color: 'text-emerald-700', adminOnly: true },
 ];
 
 export default function HospitalAdminLayout({ children, title, subtitle }) {

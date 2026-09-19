@@ -214,15 +214,21 @@ class AppointmentController extends Controller
 
     /**
      * Update appointment status (for hospital staff / admin / doctor).
+     * Automatically registers/updates the patient record with problem diagnosis when completed.
      */
-    public function updateStatus(Request $request, int $id): JsonResponse
+    public function updateStatus(Request $request, ...$params): JsonResponse
     {
         $validated = $request->validate([
             'status'      => 'required|string|in:confirmed,completed,cancelled',
             'doctor_name' => 'nullable|string|max:150',
+            'diagnosis'   => 'nullable|string|max:2000',
+            'treatment'   => 'nullable|string|max:2000',
+            'age'         => 'nullable|integer|min:0|max:150',
+            'gender'      => 'nullable|string|in:male,female,other',
         ]);
 
-        $appointment = Appointment::with(['hospital:id,name,address,phone,email'])->findOrFail($id);
+        $appointmentId = $request->route('appointmentId') ?? $request->route('id') ?? ($params[1] ?? $params[0] ?? null);
+        $appointment = Appointment::with(['hospital:id,name,address,phone,email'])->findOrFail($appointmentId);
         $user = $this->resolveUser($request);
 
         if ($user) {
@@ -246,6 +252,44 @@ class AppointmentController extends Controller
         }
 
         $appointment->update($updateData);
+
+        // Automatically record in patient detail section (patient_records) upon completion
+        if ($validated['status'] === 'completed') {
+            $age = $request->filled('age') ? (int) $request->input('age') : 30;
+            $gender = $request->input('gender') ?: 'other';
+            $diagnosis = $request->input('diagnosis')
+                ?: ($appointment->symptoms ? 'Reported Symptoms: ' . $appointment->symptoms : 'Completed OPD Consultation (' . $appointment->department . ')');
+            $treatment = $request->input('treatment')
+                ?: ('Consultation completed' . ($appointment->doctor_name ? ' by Dr. ' . $appointment->doctor_name : ''));
+
+            $existingRecord = \App\Models\PatientRecord::where('hospital_id', $appointment->hospital_id)
+                ->where(function ($q) use ($appointment) {
+                    $q->where('patient_name', $appointment->patient_name);
+                    if (!empty($appointment->patient_phone)) {
+                        $q->orWhere('phone', $appointment->patient_phone);
+                    }
+                })
+                ->first();
+
+            if ($existingRecord) {
+                $existingRecord->update([
+                    'diagnosis' => $request->input('diagnosis') ?: $existingRecord->diagnosis,
+                    'treatment' => $request->input('treatment') ?: $existingRecord->treatment,
+                    'phone'     => $appointment->patient_phone ?: $existingRecord->phone,
+                ]);
+            } else {
+                \App\Models\PatientRecord::create([
+                    'hospital_id'  => $appointment->hospital_id,
+                    'patient_name' => $appointment->patient_name,
+                    'age'          => $age,
+                    'gender'       => $gender,
+                    'phone'        => $appointment->patient_phone,
+                    'diagnosis'    => $diagnosis,
+                    'treatment'    => $treatment,
+                    'created_by'   => $user?->id ?? 1,
+                ]);
+            }
+        }
 
         try {
             event(new AppointmentStatusUpdated($appointment));
