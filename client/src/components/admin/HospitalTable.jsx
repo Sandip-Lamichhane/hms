@@ -26,7 +26,7 @@ export default function HospitalTable({ hospitals = [], onEdit, onDelete, loadin
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-slate-500 border-b border-slate-800">
+          <tr className="text-left text-slate-500 border-b border-[#c8eedc]">
             <th className="pb-3 pr-4 font-medium">Hospital</th>
             <th className="pb-3 pr-4 font-medium">Location</th>
             <th className="pb-3 pr-4 font-medium text-center">Beds</th>
@@ -35,22 +35,22 @@ export default function HospitalTable({ hospitals = [], onEdit, onDelete, loadin
             <th className="pb-3 font-medium text-center">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800/60">
+        <tbody className="divide-y divide-emerald-100">
           {hospitals.map((h) => {
             const totalBeds = Number(h.total_beds ?? h.beds_total ?? 0);
             const availBeds = Number(h.available_beds ?? h.beds_available ?? 0);
             const ambCount = Number(h.ambulances_count ?? h.ambulance_count ?? 0);
 
             return (
-              <tr key={h.id} className="group hover:bg-slate-800/30 transition-colors">
+              <tr key={h.id} className="group hover:bg-emerald-50/30 transition-colors">
                 <td className="py-4 pr-4">
                   <div>
-                    <p className="text-white font-medium">{h.name}</p>
+                    <p className="text-slate-900 font-medium">{h.name}</p>
                     <p className="text-slate-500 text-xs mt-0.5">ID #{h.id}</p>
                   </div>
                 </td>
                 <td className="py-4 pr-4">
-                  <div className="flex items-center gap-1.5 text-slate-400">
+                  <div className="flex items-center gap-1.5 text-slate-500">
                     <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="text-xs">{h.address || h.location || '—'}</span>
                   </div>
@@ -58,20 +58,20 @@ export default function HospitalTable({ hospitals = [], onEdit, onDelete, loadin
                 <td className="py-4 pr-4 text-center">
                   <div className="flex flex-col items-center">
                     {totalBeds === 0 ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-400 border border-slate-700/60">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-500 border border-[#c8eedc]/60">
                         0 / 0
                       </span>
                     ) : (
                       <>
-                        <span className="text-white font-semibold">{availBeds}</span>
+                        <span className="text-slate-900 font-semibold">{availBeds}</span>
                         <span className="text-slate-500 text-xs">/ {totalBeds}</span>
                       </>
                     )}
                   </div>
                 </td>
                 <td className="py-4 pr-4 text-center">
-                  <span className="inline-flex items-center gap-1 text-white font-semibold">
-                    <Ambulance className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="inline-flex items-center gap-1 text-slate-900 font-semibold">
+                    <Ambulance className="w-3.5 h-3.5 text-emerald-700" />
                     {ambCount}
                   </span>
                 </td>
@@ -79,7 +79,7 @@ export default function HospitalTable({ hospitals = [], onEdit, onDelete, loadin
                   {h.phone ? (
                     <a
                       href={`tel:${h.phone}`}
-                      className="flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 text-xs transition-colors"
+                      className="flex items-center gap-1.5 text-emerald-700 hover:text-indigo-300 text-xs transition-colors"
                     >
                       <Phone className="w-3.5 h-3.5" />
                       {h.phone}
@@ -101,7 +101,7 @@ export default function HospitalTable({ hospitals = [], onEdit, onDelete, loadin
                     </Link>
                     <button
                       onClick={() => onEdit?.(h)}
-                      className="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 transition-all"
+                      className="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-emerald-700 hover:text-indigo-300 transition-all"
                       title="Edit"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
