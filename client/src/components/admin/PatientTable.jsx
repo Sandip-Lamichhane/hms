@@ -326,10 +326,12 @@ export default function PatientTable({
               </div>
 
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Diagnosis</label>
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Problem Diagnosis & Clinical Findings <span className="text-rose-500">*</span>
+                </label>
                 <textarea
                   rows="2"
-                  placeholder="Enter medical diagnosis or symptoms..."
+                  placeholder="Enter medical problem diagnosis (e.g. Acute viral bronchitis, Type 2 Diabetes, Hypertension, Fracture)..."
                   value={formData.diagnosis}
                   onChange={(e) => setFormData({ ...formData, diagnosis: e.target.value })}
                   className="w-full bg-[#fbfdfc] border border-[#c8eedc] rounded-xl px-3 py-2 text-slate-900 text-xs focus:outline-none focus:border-emerald-500"

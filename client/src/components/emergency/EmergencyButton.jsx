@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import EmergencyModal from './EmergencyModal';
 
 /**
@@ -31,6 +32,12 @@ function AmbulanceIcon({ className = 'w-7 h-7' }) {
 
 export default function EmergencyButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const location = useLocation();
+
+  // Do not show floating SOS emergency button on internal management portals (/hospital/* or /admin/*)
+  if (location.pathname.startsWith('/hospital') || location.pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>

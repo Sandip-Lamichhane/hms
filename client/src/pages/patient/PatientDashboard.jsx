@@ -223,10 +223,10 @@ export default function PatientDashboard() {
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center gap-1.5 bg-[#dff5ea] p-1 rounded-full border border-[#c2ebd5]">
+            <div className="flex flex-wrap items-center gap-1.5 bg-[#dff5ea] p-1 rounded-full border border-[#c2ebd5]">
               <button
                 onClick={() => setFilterStatus('all')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   filterStatus === 'all'
                     ? 'bg-[#167a68] text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -236,7 +236,7 @@ export default function PatientDashboard() {
               </button>
               <button
                 onClick={() => setFilterStatus('confirmed')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   filterStatus === 'confirmed'
                     ? 'bg-[#167a68] text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -245,14 +245,24 @@ export default function PatientDashboard() {
                 Active ({upcomingCount})
               </button>
               <button
+                onClick={() => setFilterStatus('completed')}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  filterStatus === 'completed'
+                    ? 'bg-teal-700 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Completed ({completedCount})
+              </button>
+              <button
                 onClick={() => setFilterStatus('cancelled')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   filterStatus === 'cancelled'
                     ? 'bg-rose-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Cancelled
+                Cancelled ({appointments.filter((a) => a.status === 'cancelled').length})
               </button>
             </div>
           </div>
@@ -282,12 +292,19 @@ export default function PatientDashboard() {
             <div className="space-y-4">
               {filteredAppointments.map((apt) => {
                 const isConfirmed = apt.status === 'confirmed';
+                const isCompleted = apt.status === 'completed';
                 const isCancelled = apt.status === 'cancelled';
 
                 return (
                   <div
                     key={apt.id}
-                    className="p-5 rounded-2xl border border-emerald-100 bg-[#fbfdfc] hover:border-emerald-300 hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    className={`p-5 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                      isCompleted
+                        ? 'bg-[#f4fbf8] border-[#c2ebd5] shadow-xs'
+                        : isConfirmed
+                        ? 'bg-[#fbfdfc] border-emerald-100 hover:border-emerald-300 hover:shadow-md'
+                        : 'bg-slate-50/60 border-slate-200'
+                    }`}
                   >
                     {/* Info */}
                     <div className="space-y-2">
@@ -296,14 +313,17 @@ export default function PatientDashboard() {
                           Token: {apt.token_number}
                         </span>
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                             isConfirmed
                               ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                              : isCompleted
+                              ? 'bg-teal-50 border-teal-300 text-teal-800'
                               : isCancelled
                               ? 'bg-rose-50 border-rose-200 text-rose-700'
                               : 'bg-slate-100 border-slate-200 text-slate-700'
                           }`}
                         >
+                          {isCompleted && <CheckCircle2 className="w-3 h-3 text-teal-600" />}
                           {apt.status ? apt.status.toUpperCase() : 'CONFIRMED'}
                         </span>
                       </div>
