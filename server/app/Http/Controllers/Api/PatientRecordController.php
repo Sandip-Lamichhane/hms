@@ -29,7 +29,7 @@ class PatientRecordController extends Controller
             ], 403);
         }
 
-        $query = PatientRecord::with(['hospital', 'creator']);
+        $query = PatientRecord::with(['hospital', 'creator', 'appointment']);
 
         // Enforce tenant isolation
         if (! $user->isSuperAdmin()) {
@@ -78,19 +78,37 @@ class PatientRecordController extends Controller
             ], 403);
         }
 
-        $query = PatientRecord::with(['hospital', 'creator'])
-            ->where(function ($q) use ($user) {
+        $userDigits = self::normalizePhone($user->phone);
+
+        $query = PatientRecord::with(['hospital', 'creator', 'appointment'])
+            ->where(function ($q) use ($user, $userDigits) {
                 $q->where('user_id', $user->id);
 
                 // As a safety net for older records created before a
                 // patient account existed / before linking, also surface
-                // records that match this patient's registered phone
-                // number but were never linked to a user_id yet.
+                // records that match this patient's registered phone number
                 if (! empty($user->phone)) {
-                    $q->orWhere(function ($sub) use ($user) {
-                        $sub->whereNull('user_id')->where('phone', $user->phone);
+                    $q->orWhere(function ($sub) use ($user, $userDigits) {
+                        $sub->whereNull('user_id')
+                            ->where(function ($phoneQ) use ($user, $userDigits) {
+                                $phoneQ->where('phone', $user->phone);
+                                if ($userDigits && strlen($userDigits) >= 7) {
+                                    $phoneQ->orWhereRaw(
+                                        "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone, '-', ''), ' ', ''), '+', ''), '(', ''), ')', '') LIKE ?",
+                                        ["%{$userDigits}"]
+                                    );
+                                }
+                            });
                     });
                 }
+
+                // Also surface records whose appointment belongs to this patient
+                $q->orWhereHas('appointment', function ($aptQ) use ($user) {
+                    $aptQ->where('user_id', $user->id);
+                    if (! empty($user->email)) {
+                        $aptQ->orWhere('patient_email', $user->email);
+                    }
+                });
             });
 
         // Optional filter by a specific hospital, while still pulling
@@ -101,12 +119,12 @@ class PatientRecordController extends Controller
 
         $records = $query->orderBy('created_at', 'desc')->get();
 
-        // Opportunistically backfill user_id on any phone-matched but
+        // Opportunistically backfill user_id on any matched but
         // unlinked records so future lookups are a direct, fast match.
-        if (! empty($user->phone)) {
-            PatientRecord::whereNull('user_id')
-                ->where('phone', $user->phone)
-                ->update(['user_id' => $user->id]);
+        foreach ($records as $record) {
+            if ($record->user_id === null) {
+                $record->update(['user_id' => $user->id]);
+            }
         }
 
         return PatientRecordResource::collection($records);
@@ -119,7 +137,7 @@ class PatientRecordController extends Controller
     public function show(Request $request, int|string $id): PatientRecordResource|JsonResponse
     {
         $user = $request->user();
-        $record = PatientRecord::with(['hospital', 'creator'])->findOrFail($id);
+        $record = PatientRecord::with(['hospital', 'creator', 'appointment'])->findOrFail($id);
 
         if ($user->role === 'patient') {
             // A patient may only open a record that belongs to them,
@@ -177,15 +195,18 @@ class PatientRecordController extends Controller
 
         // Link this record to the patient's own account (if one exists)
         // so it shows up on their unified profile no matter which
-        // hospital created it. Matched by phone number since that is
-        // the one identifier staff always have on hand at intake.
-        $validated['user_id'] = $this->resolvePatientUserId($validated['phone'] ?? null);
+        // hospital created it.
+        $validated['user_id'] = $this->resolvePatientUserId(
+            $validated['phone'] ?? null,
+            $validated['patient_name'] ?? null,
+            $validated['appointment_id'] ?? null
+        );
 
         $record = PatientRecord::create($validated);
 
         return response()->json([
             'message' => 'Patient record created successfully.',
-            'data'    => new PatientRecordResource($record->load(['hospital', 'creator'])),
+            'data'    => new PatientRecordResource($record->load(['hospital', 'creator', 'appointment'])),
         ], 201);
     }
 
@@ -210,16 +231,17 @@ class PatientRecordController extends Controller
         // Prevent modification of tenant ownership and author by hospital staff
         unset($validated['hospital_id'], $validated['created_by']);
 
-        // Re-resolve the linked patient account if the phone number changed
-        if (array_key_exists('phone', $validated) && $validated['phone'] !== $record->phone) {
-            $validated['user_id'] = $this->resolvePatientUserId($validated['phone']);
-        }
+        // Re-resolve the linked patient account if phone, name, or appointment changed
+        $newPhone = $validated['phone'] ?? $record->phone;
+        $newName  = $validated['patient_name'] ?? $record->patient_name;
+        $newApt   = $validated['appointment_id'] ?? $record->appointment_id;
+        $validated['user_id'] = $this->resolvePatientUserId($newPhone, $newName, $newApt);
 
         $record->update($validated);
 
         return response()->json([
             'message' => 'Patient record updated successfully.',
-            'data'    => new PatientRecordResource($record->fresh()->load(['hospital', 'creator'])),
+            'data'    => new PatientRecordResource($record->fresh()->load(['hospital', 'creator', 'appointment'])),
         ]);
     }
 
@@ -247,18 +269,68 @@ class PatientRecordController extends Controller
     }
 
     /**
-     * Try to find an existing patient account matching a phone number,
-     * so newly created hospital records can be linked to that patient's
-     * unified profile automatically.
+     * Normalize a phone number to its core digits (last 10 digits if available).
      */
-    private function resolvePatientUserId(?string $phone): ?int
+    public static function normalizePhone(?string $phone): ?string
     {
         if (empty($phone)) {
             return null;
         }
+        $digits = preg_replace('/\D/', '', $phone);
+        if (strlen($digits) >= 10) {
+            return substr($digits, -10);
+        }
+        return !empty($digits) ? $digits : null;
+    }
 
-        return User::where('role', 'patient')
-            ->where('phone', $phone)
-            ->value('id');
+    /**
+     * Try to find an existing patient account matching a phone number or name,
+     * so newly created hospital records can be linked to that patient's
+     * unified profile automatically across any hospital.
+     */
+    private function resolvePatientUserId(?string $phone, ?string $patientName = null, ?int $appointmentId = null): ?int
+    {
+        // 1. If appointment is provided, check its user_id
+        if (! empty($appointmentId)) {
+            $appointment = \App\Models\Appointment::find($appointmentId);
+            if ($appointment && $appointment->user_id) {
+                $aptUser = User::find($appointment->user_id);
+                if ($aptUser && $aptUser->role === 'patient') {
+                    return $aptUser->id;
+                }
+            }
+        }
+
+        // 2. Direct exact match by phone
+        if (! empty($phone)) {
+            $user = User::where('role', 'patient')->where('phone', $phone)->first();
+            if ($user) {
+                return $user->id;
+            }
+
+            // 3. Flexible normalized phone match (e.g. +977-980..., 980-..., spaces)
+            $clean = self::normalizePhone($phone);
+            if ($clean && strlen($clean) >= 7) {
+                $user = User::where('role', 'patient')
+                    ->whereRaw(
+                        "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone, '-', ''), ' ', ''), '+', ''), '(', ''), ')', '') LIKE ?",
+                        ["%{$clean}"]
+                    )
+                    ->first();
+                if ($user) {
+                    return $user->id;
+                }
+            }
+        }
+
+        // 4. Fallback match by patient name if provided
+        if (! empty($patientName)) {
+            $user = User::where('role', 'patient')->where('name', $patientName)->first();
+            if ($user) {
+                return $user->id;
+            }
+        }
+
+        return null;
     }
 }

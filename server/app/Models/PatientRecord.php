@@ -12,6 +12,7 @@ class PatientRecord extends Model
 
     protected $fillable = [
         'hospital_id',
+        'appointment_id',
         'user_id',
         'patient_name',
         'age',
@@ -29,6 +30,11 @@ class PatientRecord extends Model
     public function hospital(): BelongsTo
     {
         return $this->belongsTo(Hospital::class);
+    }
+
+    public function appointment(): BelongsTo
+    {
+        return $this->belongsTo(Appointment::class);
     }
 
     public function creator(): BelongsTo

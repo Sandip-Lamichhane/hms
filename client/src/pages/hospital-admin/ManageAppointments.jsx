@@ -197,18 +197,24 @@ export default function ManageAppointments() {
 
     setCompletingSubmitting(true);
     try {
-      await updateAppointmentStatus(completingApt.id, 'completed', {
+      const res = await updateAppointmentStatus(completingApt.id, 'completed', {
         diagnosis: diagnosisForm.diagnosis || undefined,
         treatment: diagnosisForm.treatment || undefined,
         age: diagnosisForm.age ? parseInt(diagnosisForm.age, 10) : 30,
         gender: diagnosisForm.gender || 'other',
       });
+      const updatedItem = res?.data || {
+        ...completingApt,
+        status: 'completed',
+        diagnosis: diagnosisForm.diagnosis,
+        treatment: diagnosisForm.treatment,
+      };
       toast.success('Visit marked completed & recorded in Patient Details!');
       setAppointments((prev) =>
-        prev.map((a) => (a.id === completingApt.id ? { ...a, status: 'completed' } : a))
+        prev.map((a) => (a.id === completingApt.id ? { ...a, ...updatedItem, status: 'completed' } : a))
       );
       if (selectedApt && selectedApt.id === completingApt.id) {
-        setSelectedApt((prev) => ({ ...prev, status: 'completed' }));
+        setSelectedApt((prev) => ({ ...prev, ...updatedItem, status: 'completed' }));
       }
       setCompletingApt(null);
     } catch (err) {
@@ -712,6 +718,29 @@ export default function ManageAppointments() {
                   {selectedApt.symptoms || 'No specific symptoms entered by patient.'}
                 </p>
               </div>
+
+              {/* Completed Visit Clinical Notes */}
+              {(selectedApt.diagnosis || selectedApt.patient_record?.diagnosis) && (
+                <div className="p-3 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-1">
+                  <p className="text-[#0b4d3c] text-[10px] uppercase font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#167a68]" /> Clinical Diagnosis
+                  </p>
+                  <p className="text-slate-900 font-semibold leading-relaxed">
+                    {selectedApt.diagnosis || selectedApt.patient_record?.diagnosis}
+                  </p>
+                </div>
+              )}
+
+              {(selectedApt.treatment || selectedApt.patient_record?.treatment) && (
+                <div className="p-3 bg-[#fbfdfc] rounded-xl border border-emerald-100 space-y-1">
+                  <p className="text-slate-500 text-[10px] uppercase font-bold">
+                    Prescribed Treatment & Prescriptions
+                  </p>
+                  <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedApt.treatment || selectedApt.patient_record?.treatment}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Quick Action in Modal */}

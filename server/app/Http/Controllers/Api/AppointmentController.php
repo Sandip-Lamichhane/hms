@@ -7,12 +7,54 @@ use App\Events\AppointmentStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Hospital;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class AppointmentController extends Controller
 {
+    /**
+     * Helper to resolve the patient user account if matching phone, email, or name exists.
+     */
+    protected function resolvePatientUserId(?string $phone, ?string $email = null, ?string $patientName = null): ?int
+    {
+        if (! empty($phone)) {
+            $user = User::where('role', 'patient')->where('phone', $phone)->first();
+            if ($user) {
+                return $user->id;
+            }
+
+            $clean = PatientRecordController::normalizePhone($phone);
+            if ($clean && strlen($clean) >= 7) {
+                $user = User::where('role', 'patient')
+                    ->whereRaw(
+                        "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone, '-', ''), ' ', ''), '+', ''), '(', ''), ')', '') LIKE ?",
+                        ["%{$clean}"]
+                    )
+                    ->first();
+                if ($user) {
+                    return $user->id;
+                }
+            }
+        }
+
+        if (! empty($email)) {
+            $user = User::where('role', 'patient')->where('email', $email)->first();
+            if ($user) {
+                return $user->id;
+            }
+        }
+
+        if (! empty($patientName)) {
+            $user = User::where('role', 'patient')->where('name', $patientName)->first();
+            if ($user) {
+                return $user->id;
+            }
+        }
+
+        return null;
+    }
     /**
      * Helper to resolve the authenticated user via Sanctum guard or default request user.
      */
@@ -38,7 +80,7 @@ class AppointmentController extends Controller
             ], 401);
         }
 
-        $query = Appointment::with(['hospital:id,name,address,phone,email'])
+        $query = Appointment::with(['hospital:id,name,address,phone,email', 'patientRecord'])
             ->latest('appointment_date')
             ->latest('created_at');
 
@@ -133,7 +175,19 @@ class AppointmentController extends Controller
             }
         }
 
-        $userId = $user?->id;
+        $userId = null;
+        if ($user && $user->role === 'patient') {
+            $userId = $user->id;
+        } else {
+            // Booked by hospital staff/admin or guest: attempt to link to existing patient account
+            $userId = $this->resolvePatientUserId(
+                $validated['patient_phone'] ?? null,
+                $validated['patient_email'] ?? null,
+                $validated['patient_name'] ?? null
+            );
+        }
+
+        $patientEmail = $validated['patient_email'] ?? ($user && $user->role === 'patient' ? $user->email : null);
 
         $appointment = Appointment::create([
             'user_id'          => $userId,
@@ -141,7 +195,7 @@ class AppointmentController extends Controller
             'department'       => $validated['department'],
             'patient_name'     => $validated['patient_name'],
             'patient_phone'    => $validated['patient_phone'],
-            'patient_email'    => $validated['patient_email'] ?? $user?->email,
+            'patient_email'    => $patientEmail,
             'appointment_date' => $validated['appointment_date'],
             'time_slot'        => $validated['time_slot'],
             'doctor_name'      => $validated['doctor_name'] ?? null,
@@ -172,7 +226,7 @@ class AppointmentController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $appointment = Appointment::with(['hospital:id,name,address,phone,email'])->findOrFail($id);
+        $appointment = Appointment::with(['hospital:id,name,address,phone,email', 'patientRecord'])->findOrFail($id);
 
         $user = $this->resolveUser($request);
         if ($user && $user->role === 'patient' && $appointment->user_id && $appointment->user_id !== $user->id) {
@@ -251,8 +305,6 @@ class AppointmentController extends Controller
             $updateData['doctor_name'] = $validated['doctor_name'];
         }
 
-        $appointment->update($updateData);
-
         // Automatically record in patient detail section (patient_records) upon completion
         if ($validated['status'] === 'completed') {
             $diagnosis = $request->input('diagnosis')
@@ -260,7 +312,16 @@ class AppointmentController extends Controller
             $treatment = $request->input('treatment')
                 ?: ('Consultation completed' . ($appointment->doctor_name ? ' by Dr. ' . $appointment->doctor_name : ''));
 
-            $existingRecord = \App\Models\PatientRecord::where('hospital_id', $appointment->hospital_id)
+            $updateData['diagnosis'] = $diagnosis;
+            $updateData['treatment'] = $treatment;
+
+            $appointment->update($updateData);
+
+            // Check if a patient record was already created specifically for THIS appointment
+            $appointmentRecord = \App\Models\PatientRecord::where('appointment_id', $appointment->id)->first();
+
+            // Find prior patient demographic history at this hospital as fallback for age/gender
+            $previousRecord = \App\Models\PatientRecord::where('hospital_id', $appointment->hospital_id)
                 ->where(function ($q) use ($appointment) {
                     if (!empty($appointment->user_id)) {
                         $q->where('user_id', $appointment->user_id);
@@ -271,37 +332,69 @@ class AppointmentController extends Controller
                         $q->orWhere('phone', $appointment->patient_phone);
                     }
                 })
+                ->latest('id')
                 ->first();
 
             $age = $request->filled('age')
                 ? (int) $request->input('age')
-                : ($existingRecord?->age ?? 30);
+                : ($appointmentRecord?->age ?? $previousRecord?->age ?? 30);
 
             $gender = $request->input('gender')
-                ?: ($existingRecord?->gender ?? 'other');
+                ?: ($appointmentRecord?->gender ?? $previousRecord?->gender ?? 'other');
 
-            if ($existingRecord) {
-                $existingRecord->update([
-                    'user_id'   => $existingRecord->user_id ?? $appointment->user_id,
-                    'diagnosis' => $request->input('diagnosis') ?: $existingRecord->diagnosis,
-                    'treatment' => $request->input('treatment') ?: $existingRecord->treatment,
-                    'phone'     => $appointment->patient_phone ?: $existingRecord->phone,
-                    'age'       => $age,
-                    'gender'    => $gender,
-                ]);
-            } else {
-                \App\Models\PatientRecord::create([
-                    'hospital_id'  => $appointment->hospital_id,
-                    'user_id'      => $appointment->user_id,
+            // Resolve the patient's user account properly
+            $patientUserId = $appointment->user_id;
+            if ($patientUserId) {
+                $chk = User::find($patientUserId);
+                if ($chk && $chk->role !== 'patient') {
+                    $patientUserId = null; // Prevent hospital staff user_id from being saved as patient user_id
+                }
+            }
+            if (! $patientUserId) {
+                $patientUserId = $this->resolvePatientUserId(
+                    $appointment->patient_phone,
+                    $appointment->patient_email,
+                    $appointment->patient_name
+                );
+            }
+            if (! $patientUserId && $previousRecord?->user_id) {
+                $patientUserId = $previousRecord->user_id;
+            }
+
+            // Backfill appointment user_id if it was unlinked
+            if ($patientUserId && ! $appointment->user_id) {
+                $appointment->update(['user_id' => $patientUserId]);
+            }
+
+            if ($appointmentRecord) {
+                // If this specific appointment already had a patient record, update it
+                $appointmentRecord->update([
+                    'user_id'      => $patientUserId ?? $appointmentRecord->user_id,
                     'patient_name' => $appointment->patient_name,
-                    'age'          => $age,
-                    'gender'       => $gender,
-                    'phone'        => $appointment->patient_phone,
                     'diagnosis'    => $diagnosis,
                     'treatment'    => $treatment,
-                    'created_by'   => $user?->id ?? 1,
+                    'phone'        => $appointment->patient_phone ?: $appointmentRecord->phone,
+                    'age'          => $age,
+                    'gender'       => $gender,
+                ]);
+            } else {
+                // Every completed appointment creates its OWN distinct patient record (visit record)
+                // so patients with multiple completed visits keep their entire history in Patient Details
+                \App\Models\PatientRecord::create([
+                    'hospital_id'    => $appointment->hospital_id,
+                    'appointment_id' => $appointment->id,
+                    'user_id'        => $patientUserId,
+                    'patient_name'   => $appointment->patient_name,
+                    'age'            => $age,
+                    'gender'         => $gender,
+                    'phone'          => $appointment->patient_phone,
+                    'diagnosis'      => $diagnosis,
+                    'treatment'      => $treatment,
+                    'created_by'     => $user?->id ?? 1,
                 ]);
             }
+        } else {
+            $appointment->update($updateData);
         }
 
         try {
@@ -313,7 +406,7 @@ class AppointmentController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Appointment status updated successfully.',
-            'data'    => $appointment,
+            'data'    => $appointment->fresh()->load(['hospital:id,name,address,phone,email', 'patientRecord']),
         ]);
     }
 }
