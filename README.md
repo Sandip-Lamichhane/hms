@@ -1,6 +1,6 @@
 # HealthHub
 
-HealthHub is a hospital-management web application for patients, hospital staff, hospital administrators, and super administrators. It combines a Laravel REST API with a React client to provide hospital discovery, appointments, bed availability, ambulance tracking, OPD queues, emergency routing, blood-bank information, patient records, administration, analytics, and realtime updates.
+HealthHub is a hospital-management solution for patients, hospital staff, hospital administrators, and super administrators. It combines a Laravel REST API, a React web client, and a patient-focused React Native mobile app to provide hospital discovery, appointments, bed availability, ambulance tracking, OPD queues, emergency routing, blood-bank information, patient records, administration, analytics, and realtime updates.
 
 ## Features
 
@@ -12,25 +12,27 @@ HealthHub is a hospital-management web application for patients, hospital staff,
 - Manage hospitals and users from the super-admin dashboard.
 - View bed occupancy, ambulance response, and OPD wait-time analytics.
 - Receive bed, ambulance, OPD, and appointment updates through Laravel Reverb WebSockets.
+- Use the mobile app for patient login, appointment booking, medical records, and emergency requests.
 
 ## Technology
 
-| Area | Technology |
-| --- | --- |
-| Client | React 19, Vite 8, React Router, Axios |
-| Styling | Tailwind CSS 3, PostCSS |
-| Maps and charts | Mapbox GL, `react-map-gl`, Recharts |
-| API | Laravel 13, PHP 8.3+, REST endpoints |
-| Authentication | Laravel Sanctum bearer tokens |
-| Database | MySQL for development; SQLite in-memory for tests |
-| Realtime | Laravel Reverb and queued broadcast events |
-| Tooling | Composer, npm, Oxlint, PHPUnit |
+| Area            | Technology                                        |
+| --------------- | ------------------------------------------------- |
+| Web client      | React 19, Vite 8, React Router, Axios             |
+| Mobile app      | React Native, Expo, React Navigation              |
+| Styling         | Tailwind CSS 3, PostCSS                           |
+| Maps and charts | Mapbox GL, `react-map-gl`, Recharts               |
+| API             | Laravel 13, PHP 8.3+, REST endpoints              |
+| Authentication  | Laravel Sanctum bearer tokens                     |
+| Database        | MySQL for development; SQLite in-memory for tests |
+| Realtime        | Laravel Reverb and queued broadcast events        |
+| Tooling         | Composer, npm, Oxlint, PHPUnit                    |
 
 ## Repository Layout
 
 ```text
 hms/
-├── client/                 # React/Vite single-page application
+├── client/                 # React/Vite web application
 │   ├── src/
 │   │   ├── components/     # Admin, hospital, ambulance, blood, chart, emergency, and OPD UI
 │   │   ├── pages/          # Public, patient, hospital-admin, and super-admin pages
@@ -41,6 +43,12 @@ hms/
 │   │   └── App.jsx         # Client routes
 │   ├── package.json
 │   └── vite.config.js
+
+├── mobile/                 # React Native/Expo patient mobile app
+│   ├── src/
+│   ├── app.json
+│   ├── package.json
+│   └── README.md
 
 ├── server/                 # Laravel API and WebSocket server
 │   ├── app/
@@ -133,6 +141,8 @@ The Vite development server already proxies `/api` requests to `http://localhost
 
 ## Running the application
 
+### Web app
+
 Use separate terminals for the API and client:
 
 ```bash
@@ -148,6 +158,24 @@ npm run dev
 ```
 
 Open `http://localhost:3000`. The API is available at `http://localhost:8000`.
+
+### Mobile app
+
+The repository also includes a React Native patient app in `mobile/`.
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+For the mobile app, update the backend URL in `mobile/src/api/config.ts` to point to your Laravel server, such as:
+
+```ts
+export const API_BASE_URL = "http://localhost:8000/api";
+```
+
+The mobile app is documented in more detail in `mobile/README.md`.
 
 ### Realtime updates
 
@@ -184,15 +212,15 @@ For local development, keep the Reverb values in `server/.env` and `client/.env`
 
 `client/.env.example` contains the frontend template:
 
-| Variable | Purpose |
-| --- | --- |
-| `VITE_API_URL` | Laravel API base URL; defaults to `http://localhost:8000/api`. |
-| `VITE_MAPBOX_TOKEN` | Public Mapbox token for live maps and directions. |
-| `VITE_APP_NAME` | Optional application name shown by the client. |
-| `VITE_REVERB_APP_KEY` | Reverb application key. |
-| `VITE_REVERB_HOST` | Reverb host, normally `localhost`. |
-| `VITE_REVERB_PORT` | Reverb port, normally `8080`. |
-| `VITE_REVERB_SCHEME` | `http` locally or `https` when TLS is configured. |
+| Variable              | Purpose                                                        |
+| --------------------- | -------------------------------------------------------------- |
+| `VITE_API_URL`        | Laravel API base URL; defaults to `http://localhost:8000/api`. |
+| `VITE_MAPBOX_TOKEN`   | Public Mapbox token for live maps and directions.              |
+| `VITE_APP_NAME`       | Optional application name shown by the client.                 |
+| `VITE_REVERB_APP_KEY` | Reverb application key.                                        |
+| `VITE_REVERB_HOST`    | Reverb host, normally `localhost`.                             |
+| `VITE_REVERB_PORT`    | Reverb port, normally `8080`.                                  |
+| `VITE_REVERB_SCHEME`  | `http` locally or `https` when TLS is configured.              |
 
 Do not commit `.env` files or private Reverb secrets. Only expose public client configuration through `VITE_*` variables.
 
@@ -200,12 +228,12 @@ Do not commit `.env` files or private Reverb secrets. Only expose public client 
 
 Run `php artisan db:seed` before using these accounts. The seeded password is intended only for local development.
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Super admin | `admin@healthhub.com` | `password` |
-| Hospital admin | `birhospital@healthhub.com` | `password` |
+| Role           | Email                                               | Password   |
+| -------------- | --------------------------------------------------- | ---------- |
+| Super admin    | `admin@healthhub.com`                               | `password` |
+| Hospital admin | `birhospital@healthhub.com`                         | `password` |
 | Hospital admin | `tribhuvanuniversityteachinghospital@healthhub.com` | `password` |
-| Hospital admin | `patanhospital@healthhub.com` | `password` |
+| Hospital admin | `patanhospital@healthhub.com`                       | `password` |
 
 Hospital staff accounts are also seeded, but their generated email addresses are factory data. Inspect the `users` table or create staff from the super-admin panel. Change all seeded passwords before deploying.
 
@@ -223,16 +251,16 @@ The API uses Sanctum bearer tokens. The client stores the token locally and send
 
 All API routes are prefixed with `/api` and are defined in `server/routes/api.php`.
 
-| Area | Representative endpoints | Access |
-| --- | --- | --- |
-| Authentication | `POST /auth/login`, `POST /auth/register`, `GET /auth/me` | Public or authenticated |
-| Hospitals | `GET /hospitals`, `GET /hospitals/{id}` | Public |
-| Hospital resources | `/hospitals/{id}/beds`, `/ambulances`, `/opd` | Public reads; hospital roles write |
-| Appointments | `POST /appointments`, `GET /appointments`, cancellation and status routes | Public booking; authenticated management |
-| Blood services | `/blood-banks`, `/blood-donors`, `/blood-donors/request` | Public, with protected stock updates |
-| Emergency | `GET /emergency/find-nearest-hospital` | Public |
-| Patient records | `/patient-records` | Hospital roles |
-| Administration | `/admin/stats`, `/admin/hospitals`, `/admin/users`, `/admin/analytics/*` | Super admin |
+| Area               | Representative endpoints                                                  | Access                                   |
+| ------------------ | ------------------------------------------------------------------------- | ---------------------------------------- |
+| Authentication     | `POST /auth/login`, `POST /auth/register`, `GET /auth/me`                 | Public or authenticated                  |
+| Hospitals          | `GET /hospitals`, `GET /hospitals/{id}`                                   | Public                                   |
+| Hospital resources | `/hospitals/{id}/beds`, `/ambulances`, `/opd`                             | Public reads; hospital roles write       |
+| Appointments       | `POST /appointments`, `GET /appointments`, cancellation and status routes | Public booking; authenticated management |
+| Blood services     | `/blood-banks`, `/blood-donors`, `/blood-donors/request`                  | Public, with protected stock updates     |
+| Emergency          | `GET /emergency/find-nearest-hospital`                                    | Public                                   |
+| Patient records    | `/patient-records`                                                        | Hospital roles                           |
+| Administration     | `/admin/stats`, `/admin/hospitals`, `/admin/users`, `/admin/analytics/*`  | Super admin                              |
 
 Use the route file and controller request classes as the authoritative reference for request fields, validation, and response formats.
 
