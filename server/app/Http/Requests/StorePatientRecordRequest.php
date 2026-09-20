@@ -26,9 +26,10 @@ class StorePatientRecordRequest extends FormRequest
             'age'          => ['required', 'integer', 'min:0', 'max:100'],
             'gender'       => ['required', 'string', 'in:male,female,other'],
             'phone'        => ['nullable', 'string', 'max:20'],
-            'diagnosis'    => ['nullable', 'string'],
-            'treatment'    => ['nullable', 'string'],
-            'hospital_id'  => ['nullable', 'integer', 'exists:hospitals,id'],
+            'diagnosis'      => ['nullable', 'string'],
+            'treatment'      => ['nullable', 'string'],
+            'hospital_id'    => ['nullable', 'integer', 'exists:hospitals,id'],
+            'appointment_id' => ['nullable', 'integer', 'exists:appointments,id'],
         ];
     }
 

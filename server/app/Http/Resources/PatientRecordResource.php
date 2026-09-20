@@ -37,6 +37,16 @@ class PatientRecordResource extends JsonResource
                 'email' => $this->creator->email,
                 'role'  => $this->creator->role,
             ]),
+            'appointment_id' => $this->appointment_id,
+            'appointment'    => $this->whenLoaded('appointment', fn () => [
+                'id'               => $this->appointment->id,
+                'token_number'     => $this->appointment->token_number,
+                'department'       => $this->appointment->department,
+                'doctor_name'      => $this->appointment->doctor_name,
+                'appointment_date' => $this->appointment->appointment_date?->toDateString(),
+                'time_slot'        => $this->appointment->time_slot,
+                'status'           => $this->appointment->status,
+            ]),
             'created_at'   => $this->created_at?->toIso8601String(),
             'updated_at'   => $this->updated_at?->toIso8601String(),
         ];

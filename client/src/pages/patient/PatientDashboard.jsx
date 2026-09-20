@@ -574,6 +574,16 @@ export default function PatientDashboard() {
                           <Building2 className="w-3 h-3" />
                           {rec.hospital?.name || 'Hospital Visit'}
                         </span>
+                        {rec.appointment?.department && (
+                          <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 border border-[#c8eedc] text-[#167a68]">
+                            {rec.appointment.department} OPD
+                          </span>
+                        )}
+                        {rec.appointment?.token_number && (
+                          <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#dff5ea] border border-[#c2ebd5] text-[#0b4d3c]">
+                            Token: {rec.appointment.token_number}
+                          </span>
+                        )}
                         <span className="text-[11px] text-slate-400 font-medium">
                           {rec.created_at ? new Date(rec.created_at).toLocaleDateString() : ''}
                         </span>
@@ -783,6 +793,31 @@ export default function PatientDashboard() {
                   <span className="text-slate-900 font-bold">{selectedRecord.phone}</span>
                 </div>
               )}
+              {selectedRecord.appointment && (
+                <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold uppercase text-[#0b4d3c] flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[#167a68]" /> OPD Appointment
+                    </span>
+                    <span className="font-mono font-bold text-[10px] bg-[#dff5ea] text-[#0b4d3c] px-1.5 py-0.5 rounded border border-[#c2ebd5]">
+                      Token: {selectedRecord.appointment.token_number}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-emerald-100">
+                    <div>
+                      <span className="text-slate-500">Department:</span>
+                      <p className="font-bold text-slate-800">{selectedRecord.appointment.department}</p>
+                    </div>
+                    {selectedRecord.appointment.doctor_name && (
+                      <div>
+                        <span className="text-slate-500">Doctor:</span>
+                        <p className="font-bold text-slate-800">Dr. {selectedRecord.appointment.doctor_name}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {selectedRecord.creator?.name && (
                 <div className="flex justify-between">
                   <span className="text-slate-500">Attended By:</span>
