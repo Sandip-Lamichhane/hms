@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL } from './config';
+import { API_BASE_URL, getCandidateApiUrls, setWorkingApiBaseUrl } from './config';
 
 const TOKEN_KEY = '@healthhub_patient_token';
 const USER_KEY = '@healthhub_patient_user';
@@ -42,6 +42,34 @@ export class ApiError extends Error {
   }
 }
 
+// Track active verified base URL across app lifecycle
+let verifiedBaseUrl: string | null = null;
+
+async function doFetch(
+  baseUrl: string,
+  path: string,
+  headers: Record<string, string>,
+  method: string,
+  body?: any,
+  timeoutMs: number = 6000
+): Promise<Response> {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const url = `${baseUrl}${cleanPath}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function apiRequest<T = any>(
   path: string,
   options: RequestOptions = {}
@@ -60,29 +88,48 @@ export async function apiRequest<T = any>(
     }
   }
 
-  const url = `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+  const candidates = getCandidateApiUrls();
+  const baseUrlsToTry = verifiedBaseUrl
+    ? [verifiedBaseUrl, ...candidates.filter((u) => u !== verifiedBaseUrl)]
+    : candidates;
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let response: Response | null = null;
+  let lastError: any = null;
+  let successfulBaseUrl: string | null = null;
 
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-      signal: controller.signal,
-    });
-  } catch (e: any) {
-    if (e?.name === 'AbortError') {
-      throw new ApiError('Connection timed out. Please check that your device is on the same Wi-Fi as your Mac.', 408);
+  for (const candidateUrl of baseUrlsToTry) {
+    try {
+      // Use faster timeout when probing multiple candidates
+      const perCandidateTimeout =
+        baseUrlsToTry.length > 1 && !verifiedBaseUrl
+          ? Math.min(timeoutMs, 2500)
+          : timeoutMs;
+
+      response = await doFetch(candidateUrl, path, headers, method, body, perCandidateTimeout);
+      successfulBaseUrl = candidateUrl;
+      verifiedBaseUrl = candidateUrl;
+      setWorkingApiBaseUrl(candidateUrl);
+      break;
+    } catch (e: any) {
+      lastError = e;
+      // Invalidate if current verified URL failed
+      if (verifiedBaseUrl === candidateUrl) {
+        verifiedBaseUrl = null;
+      }
+    }
+  }
+
+  if (!response || !successfulBaseUrl) {
+    if (lastError?.name === 'AbortError') {
+      throw new ApiError(
+        'Connection timed out. Please check that the backend is running on port 8000 and your device is on the same network.',
+        408
+      );
     }
     throw new ApiError(
       `Cannot reach server at ${API_BASE_URL}. Ensure backend is running on port 8000.`,
       0
     );
-  } finally {
-    clearTimeout(timer);
   }
 
   let data: any = null;
@@ -113,3 +160,4 @@ export async function apiRequest<T = any>(
 
   return data as T;
 }
+

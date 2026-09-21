@@ -19,7 +19,7 @@ export function resolveHostIp(): string {
     }
   }
 
-  // 2. Linking URI fallback e.g. exp://10.10.60.227:8081
+  // 2. Linking URI fallback e.g. exp://10.120.3.140:8081
   const linkingUri = (Constants as any)?.linkingUri;
   if (typeof linkingUri === 'string' && linkingUri.includes('//')) {
     const withoutProto = linkingUri.split('//')[1];
@@ -30,25 +30,46 @@ export function resolveHostIp(): string {
   }
 
   // 3. Current active local LAN Wi-Fi IP
-  return '10.10.60.227';
+  return '10.120.3.140';
 }
 
-function resolveApiBaseUrl(): string {
-  const envUrl = process.env.EXPO_PUBLIC_API_URL;
-  if (envUrl && !envUrl.includes('10.120.3.140') && !envUrl.includes('[IP_ADDRESS]')) {
-    return envUrl;
+/**
+ * Return an ordered list of candidate backend API URLs to try.
+ * Prioritizes local loopback on simulators/emulators and LAN IP for physical devices.
+ */
+export function getCandidateApiUrls(): string[] {
+  const candidates: string[] = [];
+
+  // 1. Explicitly configured URL from .env if valid and not a known dead/placeholder IP
+  const envUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (envUrl && !envUrl.includes('10.10.60.227') && !envUrl.includes('[IP_ADDRESS]')) {
+    candidates.push(envUrl.replace(/\/+$/, ''));
   }
 
-  const hostIp = resolveHostIp();
-  if (hostIp) {
-    return `http://${hostIp}:8000/api`;
-  }
-
+  // 2. Simulator / Emulator defaults
   if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000/api';
+    candidates.push('http://10.0.2.2:8000/api');
+  } else {
+    // iOS Simulator / macOS / Web can directly access localhost/127.0.0.1
+    candidates.push('http://127.0.0.1:8000/api');
+    candidates.push('http://localhost:8000/api');
   }
 
-  return 'http://10.10.60.227:8000/api';
+  // 3. Dynamic Expo host IP (needed for physical phones on Wi-Fi)
+  const hostIp = resolveHostIp();
+  if (hostIp && hostIp !== '127.0.0.1' && hostIp !== 'localhost') {
+    candidates.push(`http://${hostIp}:8000/api`);
+  }
+
+  // 4. Current machine LAN IP
+  candidates.push('http://10.120.3.140:8000/api');
+
+  return Array.from(new Set(candidates.filter(Boolean)));
+}
+
+export function resolveApiBaseUrl(): string {
+  const candidates = getCandidateApiUrls();
+  return candidates[0] || 'http://127.0.0.1:8000/api';
 }
 
 export function resolveWebPortalUrl(): string {
@@ -59,5 +80,9 @@ export function resolveWebPortalUrl(): string {
   return `http://${ip}:3000`;
 }
 
-export const API_BASE_URL = resolveApiBaseUrl();
+export let API_BASE_URL = resolveApiBaseUrl();
 export const WEB_PORTAL_URL = resolveWebPortalUrl();
+
+export function setWorkingApiBaseUrl(url: string): void {
+  API_BASE_URL = url;
+}

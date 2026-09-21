@@ -195,6 +195,7 @@ export default function AppointmentsScreen({ navigation }: Props) {
         </View>
       ) : (
         <FlatList
+          style={styles.flatList}
           data={filtered}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
@@ -399,19 +400,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  filterBar: { backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.border, maxHeight: 54 },
-  filterContent: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, gap: 8, flexDirection: 'row' },
+  filterBar: {
+    backgroundColor: Colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  filterContent: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 10,
+    gap: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   filterChip: {
     paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingVertical: 8,
     borderRadius: Radius.full,
     backgroundColor: Colors.background,
     borderWidth: 1.5,
     borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   filterChipActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   filterText: { fontSize: 12, fontWeight: '600', color: Colors.textMuted },
-  filterTextActive: { color: Colors.white },
+  filterTextActive: { color: Colors.white, fontWeight: '700' },
+  flatList: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   list: { padding: Spacing.md, paddingBottom: 40 },
   empty: { alignItems: 'center', paddingTop: 80 },
